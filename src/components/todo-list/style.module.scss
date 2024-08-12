@@ -1,0 +1,11 @@
+.tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.completed {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
