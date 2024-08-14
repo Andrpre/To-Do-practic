@@ -5,7 +5,17 @@
 }
 
 .completed {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    position: relative;
+
+    &__tasks {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    &__delete {
+        z-index: 2;
+        top: 0;
+        right: 0;
+    }
 }

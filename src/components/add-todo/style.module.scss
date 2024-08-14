@@ -1,6 +1,12 @@
 .form {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
+
+  &__add-task {
+    display: flex;
+    gap: 10px;
+  }
 
   &__input {
     background-color: var(--main-bg);
@@ -8,6 +14,11 @@
 
     input {
       font-weight: 500;
+
+      &:focus{
+        outline: 2px var(--main-color) solid;
+        border-radius: var(--main-radius);
+      }
     }
 
     fieldset {

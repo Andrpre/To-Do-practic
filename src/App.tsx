@@ -36,6 +36,10 @@ const App: React.FC = () => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
+  const clearCompletedTodos = () => {
+    setTodos(todos.filter((todo) => todo.completed !== true));
+  };
+
   return (
     <div className="container">
       <Header />
@@ -45,6 +49,7 @@ const App: React.FC = () => {
           todos={todos}
           toggleComplete={toggleComplete}
           removeTodo={removeTodo}
+          clearCompletedTodos={clearCompletedTodos}
         />
       </section>
     </div>

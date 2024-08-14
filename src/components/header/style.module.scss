@@ -1,14 +1,17 @@
 .header {
     display: flex;
-    gap: 10px;
-    align-items: center;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 5px 15px;
+    padding: 0 15px 0 5px;
     background-color: var(--main-bg);
     border-radius: var(--main-radius);
+    cursor: pointer;
+    transition: transform .2s;
+
+    &:active {
+        transform: scale(0.9);
+    }
 }

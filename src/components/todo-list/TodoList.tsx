@@ -3,9 +3,14 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  IconButton,
   List,
+  Tooltip,
+  Zoom,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DeleteIcon from "@mui/icons-material/Delete";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
 
@@ -19,12 +24,14 @@ interface TodoListProps {
   todos: Todo[];
   toggleComplete: (id: number) => void;
   removeTodo: (id: number) => void;
+  clearCompletedTodos: () => void;
 }
 
 const TodoList: React.FC<TodoListProps> = ({
   todos,
   toggleComplete,
   removeTodo,
+  clearCompletedTodos,
 }) => {
   const currentTodos = todos.filter(
     (task) => task.completed === false
@@ -50,12 +57,32 @@ const TodoList: React.FC<TodoListProps> = ({
           ))}
         </List>
       ) : (
-        <div>no one task</div>
+        <Box>no one task</Box>
       )}
       {completedTodos.length !== 0 && (
-        <div>
+        <Box className={style.completed}>
+          <Tooltip
+            title="Удалить все завершенные задачи"
+            placement="right"
+            TransitionComponent={Zoom}
+            arrow
+          >
+            <IconButton
+              type="button"
+              className={style.completed__delete}
+              sx={{
+                backgroundColor: "var(--main-bg)",
+                color: "var(--main-color)",
+                borderRadius: "var(--main-radius)",
+                position: "absolute",
+                padding: "5px",
+              }}
+              children={<DeleteIcon fontSize="small" />}
+              onClick={() => clearCompletedTodos()}
+            />
+          </Tooltip>
           <Accordion
-            className={style.completed}
+            className={style.completed__tasks}
             disableGutters={true}
             sx={{
               backgroundColor: "transparent",
@@ -99,7 +126,7 @@ const TodoList: React.FC<TodoListProps> = ({
               </List>
             </AccordionDetails>
           </Accordion>
-        </div>
+        </Box>
       )}
     </>
   );

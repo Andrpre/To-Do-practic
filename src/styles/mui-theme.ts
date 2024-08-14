@@ -28,5 +28,38 @@ export const theme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+            backgroundColor: "var(--main-bg)"
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+            border: "none",
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+            color: "var(--text-color)",
+            width: "0.9em",
+            height: "0.9em",
+            top: "calc(50% - .4em)",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+           borderRadius: "var(--main-radius)",
+           fontSize: "1rem",
+           height: "25px",
+        },
+      },
+    },
   },
 });
