@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
 import {
   TextField,
   IconButton,
@@ -12,38 +13,52 @@ import {
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import style from "./style.module.scss";
+import { TodoPriority } from "../../App";
 
 interface AddTodoProps {
-  addTodo: (text: string) => void;
+  addTodo: (text: string, priority: TodoPriority) => void;
 }
 
 const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
-  const [text, setText] = useState("");
+  const { handleSubmit, control, reset, watch } = useForm({
+    defaultValues: {
+      text: "",
+      priority: TodoPriority.NO_PRIORITY,
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (text.trim()) {
-      addTodo(text);
-      setText("");
-    }
+  const onSubmit = (data: {
+    text: string;
+    priority: TodoPriority;
+  }) => {
+    addTodo(data.text, data.priority);
+    reset(); // сброс формы после отправки
   };
 
-  const isEmpty = text.length === 0;
+  const isEmpty = watch("text").trim().length === 0;
 
   return (
-    <form onSubmit={handleSubmit} className={style.form}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={style.form}
+    >
       <Box className={style["form__add-task"]}>
-        <TextField
-          size="small"
-          color="info"
-          className={style.form__input}
-          value={text}
-          autoFocus={true}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Add new task"
-          fullWidth
+        <Controller
+          name="text"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              size="small"
+              color="info"
+              className={style.form__input}
+              autoFocus={true}
+              placeholder="Add new task"
+              fullWidth
+            />
+          )}
         />
         {!isEmpty && (
           <Tooltip
@@ -69,41 +84,54 @@ const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
       </Box>
       <Box className={style.form__options}>
         <FormControl size="small">
-          <Select
-            defaultValue=""
-            onChange={() => {}}
-            displayEmpty
-            inputProps={{ "aria-label": "Without label" }}
-            IconComponent={ExpandCircleDownIcon}
-            sx={{ height: "40px", minWidth: "120px" }}
-          >
-            <MenuItem value="">no priority</MenuItem>
-            <MenuItem value={20}>
-              <Chip
-                sx={{ backgroundColor: "#9EFFA3" }}
-                label="low"
-              />
-            </MenuItem>
-            <MenuItem value={30}>
-              <Chip
-                sx={{ backgroundColor: "#C3BEFF" }}
-                label="medium"
-              />
-            </MenuItem>
-            <MenuItem value={40}>
-              <Chip
-                sx={{ backgroundColor: "#FAFFA2" }}
-                label="high"
-              />
-            </MenuItem>
-            <MenuItem value={50}>
-              <Chip
-              icon={<LocalFireDepartmentIcon color="error"/>}
-                sx={{ backgroundColor: "#FFA2A2" }}
-                label="urgent"
-              />
-            </MenuItem>
-          </Select>
+          <Controller
+            name="priority"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                value={field.value}
+                onChange={(e) => field.onChange(e.target.value)}
+                displayEmpty
+                inputProps={{
+                  "aria-label": "Without label",
+                }}
+                IconComponent={ExpandCircleDownIcon}
+                sx={{ height: "40px", minWidth: "120px" }}
+              >
+                <MenuItem value={TodoPriority.NO_PRIORITY}>
+                  {TodoPriority.NO_PRIORITY}
+                </MenuItem>
+                <MenuItem value={TodoPriority.LOW}>
+                  <Chip
+                    sx={{ backgroundColor: "#9EFFA3" }}
+                    label={TodoPriority.LOW}
+                  />
+                </MenuItem>
+                <MenuItem value={TodoPriority.MEDIUM}>
+                  <Chip
+                    sx={{ backgroundColor: "#C3BEFF" }}
+                    label={TodoPriority.MEDIUM}
+                  />
+                </MenuItem>
+                <MenuItem value={TodoPriority.HIGH}>
+                  <Chip
+                    sx={{ backgroundColor: "#FAFFA2" }}
+                    label={TodoPriority.HIGH}
+                  />
+                </MenuItem>
+                <MenuItem value={TodoPriority.URGENT}>
+                  <Chip
+                    icon={
+                      <LocalFireDepartmentIcon color="error" />
+                    }
+                    sx={{ backgroundColor: "#FFA2A2" }}
+                    label={TodoPriority.URGENT}
+                  />
+                </MenuItem>
+              </Select>
+            )}
+          />
         </FormControl>
       </Box>
     </form>

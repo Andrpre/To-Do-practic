@@ -7,24 +7,22 @@ import {
   Zoom,
   ListItemButton,
   ListItem,
+  Chip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import style from "./style.module.scss";
+import { Todo, TodoPriority } from "../../App";
 
 interface TodoItemProps {
-  id: number;
-  text: string;
-  completed: boolean;
+  todo: Todo;
   toggleComplete: (id: number) => void;
   removeTodo: (id: number) => void;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
-  id,
-  text,
-  completed,
+  todo,
   toggleComplete,
   removeTodo,
 }) => {
@@ -33,31 +31,39 @@ const TodoItem: React.FC<TodoItemProps> = ({
       disableGutters={true}
       className={style["tasks-item"]}
       secondaryAction={
-        <IconButton
-          edge="end"
-          aria-label="comments"
-          onClick={() => removeTodo(id)}
-        >
-          <Tooltip
-            title="Удалить задачу"
-            placement="right"
-            TransitionComponent={Zoom}
-            arrow
-          >
-            <CloseIcon
-              sx={{ color: "var(--main-color)" }}
+        <>
+          {todo.priority !== TodoPriority.NO_PRIORITY && (
+            <Chip
+              sx={{ backgroundColor: "#9EFFA3" }}
+              label={todo.priority}
             />
-          </Tooltip>
-        </IconButton>
+          )}
+          <IconButton
+            edge="end"
+            aria-label="comments"
+            onClick={() => removeTodo(todo.id)}
+          >
+            <Tooltip
+              title="Удалить задачу"
+              placement="right"
+              TransitionComponent={Zoom}
+              arrow
+            >
+              <CloseIcon
+                sx={{ color: "var(--main-color)" }}
+              />
+            </Tooltip>
+          </IconButton>
+        </>
       }
       disablePadding
     >
       <ListItemButton
         dense={true}
-        onClick={() => toggleComplete(id)}
+        onClick={() => toggleComplete(todo.id)}
       >
         <Checkbox
-          checked={completed}
+          checked={todo.completed}
           disableRipple
           edge="start"
           icon={
@@ -72,9 +78,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
           }
         />
         <ListItemText
-          primary={text}
+          primary={todo.text}
           sx={{
-            textDecoration: completed
+            textDecoration: todo.completed
               ? "line-through"
               : "none",
           }}
