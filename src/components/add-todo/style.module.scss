@@ -36,6 +36,8 @@
   }
 
   &__options {
+    display: flex;
+    justify-content: space-between;
 
     &-priority {
       background-color: var(--main-bg);

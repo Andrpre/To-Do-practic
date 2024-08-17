@@ -17,6 +17,7 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import style from "./style.module.scss";
 import { TodoPriority } from "../../App";
 import { useTodo } from "../../utils/TodoContext";
+import SortTodos from "../sort-todos/SortTodos";
 
 const AddTodo: React.FC = () => {
   const { addTask } = useTodo();
@@ -151,6 +152,7 @@ const AddTodo: React.FC = () => {
             )}
           />
         </FormControl>
+        <SortTodos />
       </Box>
     </form>
   );

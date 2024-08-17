@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { Todo, TodoPriority } from "../App";
 
-// Определяем интерфейс контекста
 interface TodoContextType {
   todos: Todo[];
   addTask: (text: string, priority: TodoPriority) => void;
@@ -14,10 +13,12 @@ interface TodoContextType {
   toggleComplete: (id: number) => void;
   clearCompletedTodos: () => void;
   updateTodo: (id: number, updates: Partial<Todo>) => void;
-  //   sortTodos: (type: "priority" | "date", order: "asc" | "desc") => void;
+  sortTodos: (
+    type: "priority" | "date",
+    order: "asc" | "desc"
+  ) => void;
 }
 
-// Создаем контекст
 const TodoContext = createContext<
   TodoContextType | undefined
 >(undefined);
@@ -38,7 +39,7 @@ export const TodoProvider: React.FC<{
       priority,
       completed: false,
     };
-    setTodos([...todos, newTodo]);
+    setTodos([newTodo, ...todos]);
   };
 
   const toggleComplete = (id: number) => {
@@ -72,31 +73,77 @@ export const TodoProvider: React.FC<{
     );
   };
 
-  //   const sortTodos = (
+  const sortTodos = (
+    type: "priority" | "date",
+    order: "asc" | "desc"
+  ) => {
+    setTodos((prevTodos) => {
+      const activeTodos = prevTodos.filter(
+        (todo) => !todo.completed
+      );
+      const completedTodos = prevTodos.filter(
+        (todo) => todo.completed
+      );
+
+      const sortFunction = (a: Todo, b: Todo) => {
+        let comparison = 0;
+        if (type === "priority") {
+          const priorityValues = {
+            [TodoPriority.NO_PRIORITY]: 0,
+            [TodoPriority.LOW]: 1,
+            [TodoPriority.MEDIUM]: 2,
+            [TodoPriority.HIGH]: 3,
+            [TodoPriority.URGENT]: 4,
+          };
+
+          comparison =
+            priorityValues[a.priority] -
+            priorityValues[b.priority];
+
+          return order === "asc" ? comparison : -comparison;
+        } else if (type === "date") {
+          comparison = a.id - b.id;
+
+          return order === "asc" ? comparison : -comparison;
+        }
+
+        return 0;
+      };
+
+      const sortedActiveTodos =
+        activeTodos.sort(sortFunction);
+
+      return [...sortedActiveTodos, ...completedTodos];
+    });
+  };
+  // const sortTodos = (
   //     type: "priority" | "date",
   //     order: "asc" | "desc"
   //   ) => {
   //     setTodos((prevTodos) => {
-  //       return [...prevTodos].sort((a, b) => {
-  //         let comparison = 0;
+  //       const sortesTask = [...prevTodos]
+  //         .filter((todo) => todo.completed !== true)
+  //         .sort((a, b) => {
+  //           let comparison = 0;
 
-  //         if (type === "priority") {
-  //           const priorityValues = {
-  //             [TodoPriority.NO_PRIORITY]: 0,
-  //             [TodoPriority.LOW]: 1,
-  //             [TodoPriority.MEDIUM]: 2,
-  //             [TodoPriority.HIGH]: 3,
-  //             [TodoPriority.URGENT]: 4,
-  //           };
-  //           comparison =
-  //             priorityValues[a.priority] -
-  //             priorityValues[b.priority];
-  //         } else if (type === "date") {
-  //           comparison = a.id - b.id;
-  //         }
+  //           if (type === "priority") {
+  //             const priorityValues = {
+  //               [TodoPriority.NO_PRIORITY]: 0,
+  //               [TodoPriority.LOW]: 1,
+  //               [TodoPriority.MEDIUM]: 2,
+  //               [TodoPriority.HIGH]: 3,
+  //               [TodoPriority.URGENT]: 4,
+  //             };
+  //             comparison =
+  //               priorityValues[a.priority] -
+  //               priorityValues[b.priority];
+  //           } else if (type === "date") {
+  //             comparison = a.id - b.id;
+  //           }
 
-  //         return order === "asc" ? comparison : -comparison;
-  //       });
+  //           return order === "asc" ? comparison : -comparison;
+  //         });
+  //         return [...prevTodos, ...sortesTask];
   //     });
   //   };
 
@@ -109,7 +156,7 @@ export const TodoProvider: React.FC<{
         toggleComplete,
         clearCompletedTodos,
         updateTodo,
-        // sortTodos,
+        sortTodos,
       }}
     >
       {children}

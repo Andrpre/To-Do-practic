@@ -49,6 +49,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           todo.priority === TodoPriority.URGENT
             ? "2px solid var(--urgent-priority-color)"
             : "",
+        outlineOffset: "-2px",
       }}
       secondaryAction={
         <>
