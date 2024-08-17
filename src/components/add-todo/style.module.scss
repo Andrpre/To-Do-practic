@@ -34,4 +34,12 @@
         filter: brightness(90%);
       }
   }
+
+  &__options {
+
+    &-priority {
+      background-color: var(--main-bg);
+      height: 40px;
+    }
+  }
 }

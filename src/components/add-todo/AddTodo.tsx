@@ -12,7 +12,7 @@ import {
   Chip,
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import style from "./style.module.scss";
 import { TodoPriority } from "../../App";
@@ -62,7 +62,7 @@ const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
         />
         {!isEmpty && (
           <Tooltip
-            title="Добавить задачу"
+            title="add task"
             placement="right"
             TransitionComponent={Zoom}
             arrow
@@ -90,42 +90,62 @@ const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
             render={({ field }) => (
               <Select
                 {...field}
+                className={style["form__options-priority"]}
                 value={field.value}
-                onChange={(e) => field.onChange(e.target.value)}
+                onChange={(e) =>
+                  field.onChange(e.target.value)
+                }
                 displayEmpty
                 inputProps={{
                   "aria-label": "Without label",
                 }}
-                IconComponent={ExpandCircleDownIcon}
-                sx={{ height: "40px", minWidth: "120px" }}
+                IconComponent={ExpandMoreIcon}
               >
                 <MenuItem value={TodoPriority.NO_PRIORITY}>
                   {TodoPriority.NO_PRIORITY}
                 </MenuItem>
                 <MenuItem value={TodoPriority.LOW}>
                   <Chip
-                    sx={{ backgroundColor: "#9EFFA3" }}
+                    sx={{
+                      backgroundColor:
+                        "var(--low-priority-bg)",
+                    }}
                     label={TodoPriority.LOW}
                   />
                 </MenuItem>
                 <MenuItem value={TodoPriority.MEDIUM}>
                   <Chip
-                    sx={{ backgroundColor: "#C3BEFF" }}
+                    sx={{
+                      backgroundColor:
+                        "var(--medium-priority-bg)",
+                    }}
                     label={TodoPriority.MEDIUM}
                   />
                 </MenuItem>
                 <MenuItem value={TodoPriority.HIGH}>
                   <Chip
-                    sx={{ backgroundColor: "#FAFFA2" }}
+                    sx={{
+                      backgroundColor:
+                        "var(--high-priority-bg)",
+                    }}
                     label={TodoPriority.HIGH}
                   />
                 </MenuItem>
                 <MenuItem value={TodoPriority.URGENT}>
                   <Chip
                     icon={
-                      <LocalFireDepartmentIcon color="error" />
+                      <LocalFireDepartmentIcon
+                        fontSize="small"
+                        sx={{
+                          color:
+                            "var(--urgent-priority-color)!important",
+                        }}
+                      />
                     }
-                    sx={{ backgroundColor: "#FFA2A2" }}
+                    sx={{
+                      backgroundColor:
+                        "var(--urgent-priority-bg)",
+                    }}
                     label={TodoPriority.URGENT}
                   />
                 </MenuItem>

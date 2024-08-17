@@ -55,6 +55,17 @@ const App: React.FC = () => {
     );
   };
 
+  const updateTodo = (
+    id: number,
+    updates: Partial<Todo>
+  ) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, ...updates } : todo
+      )
+    );
+  };
+
   return (
     <div className="container">
       <Header />
@@ -65,6 +76,7 @@ const App: React.FC = () => {
           toggleComplete={toggleComplete}
           removeTodo={removeTodo}
           clearCompletedTodos={clearCompletedTodos}
+          updateTodo={updateTodo}
         />
       </section>
     </div>

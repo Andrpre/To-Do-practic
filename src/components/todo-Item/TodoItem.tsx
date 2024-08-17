@@ -7,60 +7,197 @@ import {
   Zoom,
   ListItemButton,
   ListItem,
-  Chip,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import KeyboardCapslockIcon from "@mui/icons-material/KeyboardCapslock";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import RemoveIcon from "@mui/icons-material/Remove";
 import style from "./style.module.scss";
 import { Todo, TodoPriority } from "../../App";
+import { useForm, Controller } from "react-hook-form";
 
 interface TodoItemProps {
   todo: Todo;
   toggleComplete: (id: number) => void;
   removeTodo: (id: number) => void;
+  updateTodo: (id: number, updates: Partial<Todo>) => void;
 }
 
 const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   toggleComplete,
   removeTodo,
+  updateTodo,
 }) => {
+  const { control } = useForm({
+    defaultValues: {
+      priority: todo.priority,
+    },
+  });
   return (
     <ListItem
       disableGutters={true}
+      disablePadding={true}
       className={style["tasks-item"]}
+      sx={{
+        outline:
+          todo.priority === TodoPriority.URGENT
+            ? "2px solid var(--urgent-priority-color)"
+            : "",
+      }}
       secondaryAction={
         <>
-          {todo.priority !== TodoPriority.NO_PRIORITY && (
-            <Chip
-              sx={{ backgroundColor: "#9EFFA3" }}
-              label={todo.priority}
+          <FormControl size="small">
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  className={style["tasks-item__priority"]}
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(
+                      e.target.value as TodoPriority
+                    );
+                    updateTodo(todo.id, {
+                      priority: e.target
+                        .value as TodoPriority,
+                    });
+                  }}
+                  displayEmpty
+                  inputProps={{
+                    "aria-label": "Without label",
+                    IconComponent: () => null,
+                    sx: { padding: "0 !important" },
+                  }}
+                >
+                  <MenuItem
+                    value={TodoPriority.NO_PRIORITY}
+                  >
+                    <Tooltip
+                      title="no priority"
+                      placement="left"
+                      TransitionComponent={Zoom}
+                      arrow
+                    >
+                      <IconButton>
+                        <RemoveIcon
+                          className={
+                            style[
+                              `tasks-item__priority-${TodoPriority.NO_PRIORITY}`
+                            ]
+                          }
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </MenuItem>
+                  <MenuItem value={TodoPriority.LOW}>
+                    <Tooltip
+                      title="low"
+                      placement="left"
+                      TransitionComponent={Zoom}
+                      arrow
+                    >
+                      <IconButton>
+                        <ExpandMoreIcon
+                          className={
+                            style[
+                              `tasks-item__priority-${TodoPriority.LOW}`
+                            ]
+                          }
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </MenuItem>
+                  <MenuItem value={TodoPriority.MEDIUM}>
+                    <Tooltip
+                      title="medium"
+                      placement="left"
+                      TransitionComponent={Zoom}
+                      arrow
+                    >
+                      <IconButton>
+                        <KeyboardCapslockIcon
+                          className={
+                            style[
+                              `tasks-item__priority-${TodoPriority.MEDIUM}`
+                            ]
+                          }
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </MenuItem>
+                  <MenuItem value={TodoPriority.HIGH}>
+                    <Tooltip
+                      title="high"
+                      placement="left"
+                      TransitionComponent={Zoom}
+                      arrow
+                    >
+                      <IconButton>
+                        <KeyboardDoubleArrowUpIcon
+                          className={
+                            style[
+                              `tasks-item__priority-${TodoPriority.HIGH}`
+                            ]
+                          }
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </MenuItem>
+                  <MenuItem value={TodoPriority.URGENT}>
+                    <Tooltip
+                      title="urgent"
+                      placement="left"
+                      TransitionComponent={Zoom}
+                      arrow
+                    >
+                      <IconButton>
+                        <LocalFireDepartmentIcon
+                          className={
+                            style[
+                              `tasks-item__priority-${TodoPriority.URGENT}`
+                            ]
+                          }
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </MenuItem>
+                </Select>
+              )}
             />
-          )}
-          <IconButton
-            edge="end"
-            aria-label="comments"
-            onClick={() => removeTodo(todo.id)}
+          </FormControl>
+          <Tooltip
+            title="delete task"
+            placement="right"
+            TransitionComponent={Zoom}
+            arrow
           >
-            <Tooltip
-              title="Удалить задачу"
-              placement="right"
-              TransitionComponent={Zoom}
-              arrow
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => removeTodo(todo.id)}
             >
               <CloseIcon
                 sx={{ color: "var(--main-color)" }}
               />
-            </Tooltip>
-          </IconButton>
+            </IconButton>
+          </Tooltip>
         </>
       }
-      disablePadding
     >
       <ListItemButton
         dense={true}
         onClick={() => toggleComplete(todo.id)}
+        sx={{ paddingRight: "80px !important" }}
       >
         <Checkbox
           checked={todo.completed}
@@ -83,6 +220,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
             textDecoration: todo.completed
               ? "line-through"
               : "none",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         />
       </ListItemButton>

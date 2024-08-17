@@ -20,6 +20,7 @@ interface TodoListProps {
   toggleComplete: (id: number) => void;
   removeTodo: (id: number) => void;
   clearCompletedTodos: () => void;
+  updateTodo: (id: number, updates: Partial<Todo>) => void;
 }
 
 const TodoList: React.FC<TodoListProps> = ({
@@ -27,6 +28,7 @@ const TodoList: React.FC<TodoListProps> = ({
   toggleComplete,
   removeTodo,
   clearCompletedTodos,
+  updateTodo,
 }) => {
   const currentTodos = todos.filter(
     (task) => task.completed === false
@@ -48,6 +50,7 @@ const TodoList: React.FC<TodoListProps> = ({
               todo={todo}
               toggleComplete={toggleComplete}
               removeTodo={removeTodo}
+              updateTodo={updateTodo}
             />
           ))}
         </List>
@@ -57,7 +60,7 @@ const TodoList: React.FC<TodoListProps> = ({
       {completedTodos.length !== 0 && (
         <Box className={style.completed}>
           <Tooltip
-            title="Удалить все завершенные задачи"
+            title="delete all completed tasks"
             placement="right"
             TransitionComponent={Zoom}
             arrow
@@ -116,6 +119,7 @@ const TodoList: React.FC<TodoListProps> = ({
                     todo={todo}
                     toggleComplete={toggleComplete}
                     removeTodo={removeTodo}
+                    updateTodo={updateTodo}
                   />
                 ))}
               </List>
