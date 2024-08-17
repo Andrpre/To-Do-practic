@@ -16,12 +16,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import style from "./style.module.scss";
 import { TodoPriority } from "../../App";
+import { useTodo } from "../../utils/TodoContext";
 
-interface AddTodoProps {
-  addTodo: (text: string, priority: TodoPriority) => void;
-}
-
-const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
+const AddTodo: React.FC = () => {
+  const { addTask } = useTodo();
   const { handleSubmit, control, reset, watch } = useForm({
     defaultValues: {
       text: "",
@@ -33,8 +31,8 @@ const AddTodo: React.FC<AddTodoProps> = ({ addTodo }) => {
     text: string;
     priority: TodoPriority;
   }) => {
-    addTodo(data.text, data.priority);
-    reset(); // сброс формы после отправки
+    addTask(data.text, data.priority);
+    reset();
   };
 
   const isEmpty = watch("text").trim().length === 0;

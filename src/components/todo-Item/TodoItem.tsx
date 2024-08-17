@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   ListItemText,
   IconButton,
@@ -11,6 +12,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+
 import CloseIcon from "@mui/icons-material/Close";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
@@ -19,23 +21,19 @@ import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp
 import KeyboardCapslockIcon from "@mui/icons-material/KeyboardCapslock";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RemoveIcon from "@mui/icons-material/Remove";
+
 import style from "./style.module.scss";
 import { Todo, TodoPriority } from "../../App";
 import { useForm, Controller } from "react-hook-form";
+import { useTodo } from "../../utils/TodoContext";
 
 interface TodoItemProps {
   todo: Todo;
-  toggleComplete: (id: number) => void;
-  removeTodo: (id: number) => void;
-  updateTodo: (id: number, updates: Partial<Todo>) => void;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  toggleComplete,
-  removeTodo,
-  updateTodo,
-}) => {
+const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
+  const { toggleComplete, removeTask, updateTodo } =
+    useTodo();
   const { control } = useForm({
     defaultValues: {
       priority: todo.priority,
@@ -184,7 +182,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             <IconButton
               edge="end"
               aria-label="delete"
-              onClick={() => removeTodo(todo.id)}
+              onClick={() => removeTask(todo.id)}
             >
               <CloseIcon
                 sx={{ color: "var(--main-color)" }}

@@ -13,23 +13,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
-import { Todo } from "../../App";
+import { useTodo } from "../../utils/TodoContext";
 
-interface TodoListProps {
-  todos: Todo[];
-  toggleComplete: (id: number) => void;
-  removeTodo: (id: number) => void;
-  clearCompletedTodos: () => void;
-  updateTodo: (id: number, updates: Partial<Todo>) => void;
-}
-
-const TodoList: React.FC<TodoListProps> = ({
-  todos,
-  toggleComplete,
-  removeTodo,
-  clearCompletedTodos,
-  updateTodo,
-}) => {
+const TodoList: React.FC = () => {
+  const {
+    todos,
+    clearCompletedTodos,
+  } = useTodo();
   const currentTodos = todos.filter(
     (task) => task.completed === false
   );
@@ -48,9 +38,6 @@ const TodoList: React.FC<TodoListProps> = ({
             <TodoItem
               key={todo.id}
               todo={todo}
-              toggleComplete={toggleComplete}
-              removeTodo={removeTodo}
-              updateTodo={updateTodo}
             />
           ))}
         </List>
@@ -117,9 +104,6 @@ const TodoList: React.FC<TodoListProps> = ({
                   <TodoItem
                     key={todo.id}
                     todo={todo}
-                    toggleComplete={toggleComplete}
-                    removeTodo={removeTodo}
-                    updateTodo={updateTodo}
                   />
                 ))}
               </List>
