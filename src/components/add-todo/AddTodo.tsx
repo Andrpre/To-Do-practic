@@ -5,19 +5,13 @@ import {
   IconButton,
   Tooltip,
   Zoom,
-  FormControl,
-  Select,
-  MenuItem,
   Box,
-  Chip,
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import style from "./style.module.scss";
 import { TodoPriority } from "../../App";
 import { useTodo } from "../../utils/TodoContext";
-import SortTodos from "../sort-todos/SortTodos";
+import TodoOptions from "../todo-options/TodoOptions";
 
 const AddTodo: React.FC = () => {
   const { addTask } = useTodo();
@@ -81,79 +75,7 @@ const AddTodo: React.FC = () => {
           </Tooltip>
         )}
       </Box>
-      <Box className={style.form__options}>
-        <FormControl size="small">
-          <Controller
-            name="priority"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                className={style["form__options-priority"]}
-                value={field.value}
-                onChange={(e) =>
-                  field.onChange(e.target.value)
-                }
-                displayEmpty
-                inputProps={{
-                  "aria-label": "Without label",
-                }}
-                IconComponent={ExpandMoreIcon}
-              >
-                <MenuItem value={TodoPriority.NO_PRIORITY}>
-                  {TodoPriority.NO_PRIORITY}
-                </MenuItem>
-                <MenuItem value={TodoPriority.LOW}>
-                  <Chip
-                    sx={{
-                      backgroundColor:
-                        "var(--low-priority-bg)",
-                    }}
-                    label={TodoPriority.LOW}
-                  />
-                </MenuItem>
-                <MenuItem value={TodoPriority.MEDIUM}>
-                  <Chip
-                    sx={{
-                      backgroundColor:
-                        "var(--medium-priority-bg)",
-                    }}
-                    label={TodoPriority.MEDIUM}
-                  />
-                </MenuItem>
-                <MenuItem value={TodoPriority.HIGH}>
-                  <Chip
-                    sx={{
-                      backgroundColor:
-                        "var(--high-priority-bg)",
-                    }}
-                    label={TodoPriority.HIGH}
-                  />
-                </MenuItem>
-                <MenuItem value={TodoPriority.URGENT}>
-                  <Chip
-                    icon={
-                      <LocalFireDepartmentIcon
-                        fontSize="small"
-                        sx={{
-                          color:
-                            "var(--urgent-priority-color)!important",
-                        }}
-                      />
-                    }
-                    sx={{
-                      backgroundColor:
-                        "var(--urgent-priority-bg)",
-                    }}
-                    label={TodoPriority.URGENT}
-                  />
-                </MenuItem>
-              </Select>
-            )}
-          />
-        </FormControl>
-        <SortTodos />
-      </Box>
+      <TodoOptions control={control} />
     </form>
   );
 };

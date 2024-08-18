@@ -3,26 +3,4 @@
   border-radius: var(--main-radius);
   color: var(--main-color);
   padding: 0;
-
-  &__priority {
-    background-color: transparent;
-    min-width: min-content;
-    height: 40px;
-
-    &-low {
-        color: var(--low-priority-color);
-    }
-
-    &-medium {
-        color: var(--medium-priority-color);
-    }
-
-    &-high {
-        color: var(--high-priority-color);
-    }
-
-    &-urgent {
-        color: var(--urgent-priority-color);
-    }
-  }
 }

@@ -16,15 +16,12 @@ import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
 
 const TodoList: React.FC = () => {
-  const {
-    todos,
-    clearCompletedTodos,
-  } = useTodo();
+  const { todos, clearCompletedTodos } = useTodo();
   const currentTodos = todos.filter(
     (task) => task.completed === false
   );
   const completedTodos = todos.filter(
-    (task) => task.completed === true
+    (task) => task.completed
   );
 
   return (
@@ -35,10 +32,7 @@ const TodoList: React.FC = () => {
           sx={{ padding: 0 }}
         >
           {currentTodos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-            />
+            <TodoItem key={todo.id} todo={todo} />
           ))}
         </List>
       ) : (
@@ -101,10 +95,7 @@ const TodoList: React.FC = () => {
                 sx={{ padding: 0 }}
               >
                 {completedTodos.map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    todo={todo}
-                  />
+                  <TodoItem key={todo.id} todo={todo} />
                 ))}
               </List>
             </AccordionDetails>
