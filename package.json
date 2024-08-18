@@ -1,7 +1,8 @@
 {
-  "name": "todo-list",
+  "name": "to-do-practic",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/projects/to-do-practic",
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
