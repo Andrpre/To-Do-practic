@@ -17,7 +17,6 @@ import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
 
 const SortTodos: React.FC = () => {
-
   const { sortTodos } = useTodo();
   const [anchorEl, setAnchorEl] =
     useState<null | HTMLElement>(null);
@@ -33,22 +32,22 @@ const SortTodos: React.FC = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  
+
   const handleSortPriorityDesc = () => {
     sortTodos("priority", "desc");
     handleClose();
   };
-  
+
   const handleSortPriorityAsc = () => {
     sortTodos("priority", "asc");
     handleClose();
   };
-  
+
   const handleSortDateDesc = () => {
     sortTodos("date", "desc");
     handleClose();
   };
-  
+
   const handleSortDateAsc = () => {
     sortTodos("date", "asc");
     handleClose();
@@ -105,34 +104,55 @@ const SortTodos: React.FC = () => {
             <ListItemText>priority</ListItemText>
           </MenuItem>
         </Tooltip>
-        <MenuItem onClick={handleSortPriorityAsc}>
-          <ListItemIcon>
-            <NorthRoundedIcon
-              fontSize="small"
-              sx={{ color: "var(--text-color)" }}
-            />
-          </ListItemIcon>
-          <ListItemText>priority</ListItemText>
-        </MenuItem>
+        <Tooltip
+          title="not priority first"
+          placement="right"
+          TransitionComponent={Zoom}
+          arrow
+        >
+          <MenuItem onClick={handleSortPriorityAsc}>
+            <ListItemIcon>
+              <NorthRoundedIcon
+                fontSize="small"
+                sx={{ color: "var(--text-color)" }}
+              />
+            </ListItemIcon>
+            <ListItemText>priority</ListItemText>
+          </MenuItem>
+        </Tooltip>
         <Divider />
-        <MenuItem onClick={handleSortDateDesc}>
-          <ListItemIcon>
-            <SouthRoundedIcon
-              fontSize="small"
-              sx={{ color: "var(--text-color)" }}
-            />
-          </ListItemIcon>
-          <ListItemText>date</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleSortDateAsc}>
-          <ListItemIcon>
-            <NorthRoundedIcon
-              fontSize="small"
-              sx={{ color: "var(--text-color)" }}
-            />
-          </ListItemIcon>
-          <ListItemText>date</ListItemText>
-        </MenuItem>
+        <Tooltip
+          title="new first"
+          placement="right"
+          TransitionComponent={Zoom}
+          arrow
+        >
+          <MenuItem onClick={handleSortDateDesc}>
+            <ListItemIcon>
+              <SouthRoundedIcon
+                fontSize="small"
+                sx={{ color: "var(--text-color)" }}
+              />
+            </ListItemIcon>
+            <ListItemText>date</ListItemText>
+          </MenuItem>
+        </Tooltip>
+        <Tooltip
+          title="old ones first"
+          placement="right"
+          TransitionComponent={Zoom}
+          arrow
+        >
+          <MenuItem onClick={handleSortDateAsc}>
+            <ListItemIcon>
+              <NorthRoundedIcon
+                fontSize="small"
+                sx={{ color: "var(--text-color)" }}
+              />
+            </ListItemIcon>
+            <ListItemText>date</ListItemText>
+          </MenuItem>
+        </Tooltip>
       </Menu>
     </Box>
   );

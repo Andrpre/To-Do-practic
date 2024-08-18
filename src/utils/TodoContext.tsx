@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   ReactNode,
+  useEffect,
 } from "react";
 import { Todo, TodoPriority } from "../App";
 
@@ -28,6 +29,19 @@ export const TodoProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  
+  // Загружаем задачи из localStorage при загрузке компонента
+  useEffect(() => {
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+  }, []);
+  
+  // Сохраняем задачи в localStorage при изменении todos
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTask = (
     text: string,
@@ -95,19 +109,13 @@ export const TodoProvider: React.FC<{
             [TodoPriority.HIGH]: 3,
             [TodoPriority.URGENT]: 4,
           };
-
           comparison =
             priorityValues[a.priority] -
             priorityValues[b.priority];
-
-          return order === "asc" ? comparison : -comparison;
         } else if (type === "date") {
           comparison = a.id - b.id;
-
-          return order === "asc" ? comparison : -comparison;
         }
-
-        return 0;
+        return order === "asc" ? comparison : -comparison;
       };
 
       const sortedActiveTodos =
@@ -116,36 +124,6 @@ export const TodoProvider: React.FC<{
       return [...sortedActiveTodos, ...completedTodos];
     });
   };
-  // const sortTodos = (
-  //     type: "priority" | "date",
-  //     order: "asc" | "desc"
-  //   ) => {
-  //     setTodos((prevTodos) => {
-  //       const sortesTask = [...prevTodos]
-  //         .filter((todo) => todo.completed !== true)
-  //         .sort((a, b) => {
-  //           let comparison = 0;
-
-  //           if (type === "priority") {
-  //             const priorityValues = {
-  //               [TodoPriority.NO_PRIORITY]: 0,
-  //               [TodoPriority.LOW]: 1,
-  //               [TodoPriority.MEDIUM]: 2,
-  //               [TodoPriority.HIGH]: 3,
-  //               [TodoPriority.URGENT]: 4,
-  //             };
-  //             comparison =
-  //               priorityValues[a.priority] -
-  //               priorityValues[b.priority];
-  //           } else if (type === "date") {
-  //             comparison = a.id - b.id;
-  //           }
-
-  //           return order === "asc" ? comparison : -comparison;
-  //         });
-  //         return [...prevTodos, ...sortesTask];
-  //     });
-  //   };
 
   return (
     <TodoContext.Provider
