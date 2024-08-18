@@ -21,3 +21,9 @@ body {
     flex-direction: column;
     gap: 15px;
 }
+
+@media (width <= 630px) {
+    .container {
+        margin: 15px 10px;
+    }
+}

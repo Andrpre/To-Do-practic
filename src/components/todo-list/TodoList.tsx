@@ -13,31 +13,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
+import { useTodo } from "../../utils/TodoContext";
 
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
-
-interface TodoListProps {
-  todos: Todo[];
-  toggleComplete: (id: number) => void;
-  removeTodo: (id: number) => void;
-  clearCompletedTodos: () => void;
-}
-
-const TodoList: React.FC<TodoListProps> = ({
-  todos,
-  toggleComplete,
-  removeTodo,
-  clearCompletedTodos,
-}) => {
+const TodoList: React.FC = () => {
+  const { todos, clearCompletedTodos } = useTodo();
   const currentTodos = todos.filter(
     (task) => task.completed === false
   );
   const completedTodos = todos.filter(
-    (task) => task.completed === true
+    (task) => task.completed
   );
 
   return (
@@ -48,12 +32,7 @@ const TodoList: React.FC<TodoListProps> = ({
           sx={{ padding: 0 }}
         >
           {currentTodos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              {...todo}
-              toggleComplete={toggleComplete}
-              removeTodo={removeTodo}
-            />
+            <TodoItem key={todo.id} todo={todo} />
           ))}
         </List>
       ) : (
@@ -62,7 +41,7 @@ const TodoList: React.FC<TodoListProps> = ({
       {completedTodos.length !== 0 && (
         <Box className={style.completed}>
           <Tooltip
-            title="Удалить все завершенные задачи"
+            title="delete all completed tasks"
             placement="right"
             TransitionComponent={Zoom}
             arrow
@@ -116,12 +95,7 @@ const TodoList: React.FC<TodoListProps> = ({
                 sx={{ padding: 0 }}
               >
                 {completedTodos.map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    {...todo}
-                    toggleComplete={toggleComplete}
-                    removeTodo={removeTodo}
-                  />
+                  <TodoItem key={todo.id} todo={todo} />
                 ))}
               </List>
             </AccordionDetails>

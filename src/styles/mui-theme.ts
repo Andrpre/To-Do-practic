@@ -31,7 +31,7 @@ export const theme = createTheme({
     MuiInputBase: {
       styleOverrides: {
         root: {
-            backgroundColor: "var(--main-bg)"
+            // backgroundColor: "var(--main-bg)"
         },
       },
     },

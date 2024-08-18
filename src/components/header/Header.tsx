@@ -41,7 +41,9 @@ const Header: React.FC = () => {
             checked={logoDone}
             disableRipple
             icon={
-              <RadioButtonUncheckedIcon color="inherit" />
+              <RadioButtonUncheckedIcon
+                sx={{ color: "var(--text-color)" }}
+              />
             }
             checkedIcon={
               <RadioButtonCheckedIcon
