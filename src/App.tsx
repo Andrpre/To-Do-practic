@@ -13,7 +13,7 @@ export interface Todo {
 }
 
 export enum TodoPriority {
-  NO_PRIORITY = "no priority",
+  NO_PRIORITY = "priority",
   LOW = "low",
   MEDIUM = "medium",
   HIGH = "high",
