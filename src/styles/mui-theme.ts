@@ -28,13 +28,6 @@ export const theme = createTheme({
         },
       },
     },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-            // backgroundColor: "var(--main-bg)"
-        },
-      },
-    },
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
@@ -58,6 +51,9 @@ export const theme = createTheme({
            borderRadius: "var(--main-radius)",
            fontSize: "1rem",
            height: "25px",
+        },
+        icon: {
+           color: "inherit",
         },
       },
     },

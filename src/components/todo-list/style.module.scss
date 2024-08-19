@@ -13,9 +13,9 @@
         gap: 15px;
     }
 
-    &__delete {
-        z-index: 2;
-        top: 0;
-        right: 0;
+    &__summary {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
     }
 }

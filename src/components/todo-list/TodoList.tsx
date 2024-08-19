@@ -5,6 +5,7 @@ import {
   AccordionSummary,
   Box,
   IconButton,
+  Link,
   List,
   Tooltip,
   Zoom,
@@ -40,26 +41,6 @@ const TodoList: React.FC = () => {
       )}
       {completedTodos.length !== 0 && (
         <Box className={style.completed}>
-          <Tooltip
-            title="delete all completed tasks"
-            placement="right"
-            TransitionComponent={Zoom}
-            arrow
-          >
-            <IconButton
-              type="button"
-              className={style.completed__delete}
-              sx={{
-                backgroundColor: "var(--main-bg)",
-                color: "var(--main-color)",
-                borderRadius: "var(--main-radius)",
-                position: "absolute",
-                padding: "5px",
-              }}
-              children={<DeleteIcon fontSize="small" />}
-              onClick={() => clearCompletedTodos()}
-            />
-          </Tooltip>
           <Accordion
             className={style.completed__tasks}
             disableGutters={true}
@@ -68,23 +49,42 @@ const TodoList: React.FC = () => {
               boxShadow: "none",
             }}
           >
-            <AccordionSummary
-              sx={{
-                padding: 0,
-                minHeight: "auto",
-                color: "var(--main-color)",
-                justifyContent: "start",
-              }}
-              expandIcon={
-                <ExpandMoreIcon
+            <Box className={style.completed__summary}>
+              <AccordionSummary
+                sx={{
+                  padding: 0,
+                  minHeight: "auto",
+                  color: "var(--main-color)",
+                  justifyContent: "start",
+                  flex: 1,
+                }}
+                expandIcon={
+                  <ExpandMoreIcon
+                    sx={{
+                      color: "var(--main-color)",
+                    }}
+                  />
+                }
+              >
+                {completedTodos.length} completed
+              </AccordionSummary>
+              <Tooltip
+                title="delete all completed tasks"
+                placement="right"
+                TransitionComponent={Zoom}
+                arrow
+              >
+                <Link
                   sx={{
                     color: "var(--main-color)",
                   }}
-                />
-              }
-            >
-              {completedTodos.length} completed
-            </AccordionSummary>
+                  component="button"
+                  onClick={() => clearCompletedTodos()}
+                >
+                  clear all
+                </Link>
+              </Tooltip>
+            </Box>
             <AccordionDetails
               sx={{
                 padding: 0,

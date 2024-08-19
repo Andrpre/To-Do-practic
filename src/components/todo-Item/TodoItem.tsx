@@ -20,13 +20,12 @@ import { useForm } from "react-hook-form";
 import { useTodo } from "../../utils/TodoContext";
 import Priority from "../priority/Priority";
 
-interface TodoItemProps {
+interface ITodoItemProps {
   todo: Todo;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const { toggleComplete, removeTask } =
-    useTodo();
+const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
+  const { toggleComplete, removeTask } = useTodo();
   const { control } = useForm({
     defaultValues: {
       priority: todo.priority,
@@ -63,7 +62,12 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
               onClick={() => removeTask(todo.id)}
             >
               <CloseIcon
-                sx={{ color: "var(--main-color)" }}
+                sx={{
+                  color:
+                    todo.priority === TodoPriority.URGENT
+                      ? "var(--urgent-priority-color)"
+                      : "var(--main-color)",
+                }}
               />
             </IconButton>
           </Tooltip>
@@ -81,25 +85,40 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           edge="start"
           icon={
             <RadioButtonUncheckedIcon
-              sx={{ color: "var(--main-color)" }}
+              sx={{
+                color:
+                  todo.priority === TodoPriority.URGENT
+                    ? "var(--urgent-priority-color)"
+                    : "var(--main-color)",
+              }}
             />
           }
           checkedIcon={
             <RadioButtonCheckedIcon
-              sx={{ color: "var(--main-color)" }}
+              sx={{
+                color:
+                  todo.priority === TodoPriority.URGENT
+                    ? "var(--urgent-priority-color)"
+                    : "var(--main-color)",
+              }}
             />
           }
         />
         <ListItemText
-          primary={todo.text}
           sx={{
             textDecoration: todo.completed
               ? "line-through"
               : "none",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            color:
+              todo.priority === TodoPriority.URGENT
+                ? "var(--urgent-priority-color)"
+                : "var(--main-color)",
           }}
-        />
+        >
+          {todo.text}
+        </ListItemText>
       </ListItemButton>
     </ListItem>
   );

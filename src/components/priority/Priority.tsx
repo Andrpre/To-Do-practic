@@ -54,7 +54,7 @@ const Priority: React.FC<IPriorityProps> = ({
                 ? () => null
                 : ExpandMoreIcon,
               sx: {
-                padding: isCompact ? "0 !important" : "",
+                padding: isCompact ? "0 !important" : "8px",
               },
             }}
             className={
@@ -75,7 +75,10 @@ const Priority: React.FC<IPriorityProps> = ({
                   </IconButton>
                 </Tooltip>
               ) : (
-                TodoPriority.NO_PRIORITY
+                <Chip
+                  icon={<RemoveIcon fontSize="small" />}
+                  label={TodoPriority.NO_PRIORITY}
+                />
               )}
             </MenuItem>
 
@@ -97,7 +100,9 @@ const Priority: React.FC<IPriorityProps> = ({
                   sx={{
                     backgroundColor:
                       "var(--low-priority-bg)",
+                    color: "var(--low-priority-color)",
                   }}
+                  icon={<ExpandMoreIcon fontSize="small"/>}
                   label={TodoPriority.LOW}
                 />
               )}
@@ -125,7 +130,9 @@ const Priority: React.FC<IPriorityProps> = ({
                   sx={{
                     backgroundColor:
                       "var(--medium-priority-bg)",
+                    color: "var(--medium-priority-color)",
                   }}
+                  icon={<KeyboardCapslockIcon fontSize="small"/>}
                   label={TodoPriority.MEDIUM}
                 />
               )}
@@ -153,7 +160,9 @@ const Priority: React.FC<IPriorityProps> = ({
                   sx={{
                     backgroundColor:
                       "var(--high-priority-bg)",
+                    color: "var(--high-priority-color)",
                   }}
+                  icon={<KeyboardDoubleArrowUpIcon fontSize="small"/>}
                   label={TodoPriority.HIGH}
                 />
               )}
@@ -178,19 +187,12 @@ const Priority: React.FC<IPriorityProps> = ({
                 </Tooltip>
               ) : (
                 <Chip
-                  icon={
-                    <LocalFireDepartmentIcon
-                      fontSize="small"
-                      sx={{
-                        color:
-                          "var(--urgent-priority-color)!important",
-                      }}
-                    />
-                  }
                   sx={{
                     backgroundColor:
                       "var(--urgent-priority-bg)",
+                    color: "var(--urgent-priority-color)",
                   }}
+                  icon={<LocalFireDepartmentIcon fontSize="small"/>}
                   label={TodoPriority.URGENT}
                 />
               )}
