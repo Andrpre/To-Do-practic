@@ -6,6 +6,7 @@ import {
   Tooltip,
   Zoom,
   Box,
+  FormControl,
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import style from "./style.module.scss";
@@ -26,14 +27,19 @@ const AddTodo: React.FC = () => {
     text: string;
     priority: TodoPriority;
   }) => {
-    addTask(data.text, data.priority);
-    reset();
+    if (data.text.trim().length !== 0) {
+      addTask(data.text, data.priority);
+      reset();
+    }
   };
 
   const isEmpty = watch("text").trim().length === 0;
 
   return (
-    <form
+    <FormControl
+      component="form"
+      size="small"
+      required={true}
       onSubmit={handleSubmit(onSubmit)}
       className={style.form}
     >
@@ -53,6 +59,7 @@ const AddTodo: React.FC = () => {
             />
           )}
         />
+        <TodoOptions control={control} />
         {!isEmpty && (
           <Tooltip
             title="add task"
@@ -75,8 +82,7 @@ const AddTodo: React.FC = () => {
           </Tooltip>
         )}
       </Box>
-      <TodoOptions control={control} />
-    </form>
+    </FormControl>
   );
 };
 

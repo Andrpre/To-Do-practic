@@ -57,7 +57,7 @@ const SortTodos: React.FC = () => {
     <Box>
       <Tooltip
         title="sort"
-        placement="right"
+        placement="top"
         TransitionComponent={Zoom}
         arrow
       >

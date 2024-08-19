@@ -66,7 +66,7 @@ const Priority: React.FC<IPriorityProps> = ({
             <MenuItem value={TodoPriority.NO_PRIORITY}>
               {isCompact ? (
                 <Tooltip
-                  title="no priority"
+                  title="priority"
                   placement="left"
                   arrow
                 >

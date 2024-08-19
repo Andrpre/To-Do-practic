@@ -15,7 +15,7 @@
     input {
       font-weight: 500;
 
-      &:focus{
+      &:focus {
         outline: 2px var(--main-color) solid;
         border-radius: var(--main-radius);
       }
@@ -28,10 +28,19 @@
 
   &__button {
     transform-origin: right;
-    
+
     &:hover {
-        background-color: var(--main-color) !important;
-        filter: brightness(90%);
-      }
+      background-color: var(--main-color) !important;
+      filter: brightness(90%);
+    }
+  }
+}
+
+@media (width <=630px) {
+  .form {
+    &__add-task {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
   }
 }
