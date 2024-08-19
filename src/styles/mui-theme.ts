@@ -35,6 +35,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+            minHeight: "auto",
+        },
+      },
+    },
     MuiSelect: {
       styleOverrides: {
         icon: {

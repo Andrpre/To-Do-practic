@@ -88,9 +88,16 @@ const TodoOptions: React.FC<TodoOptionsProps> = ({
           horizontal: "right",
         }}
       >
+      <Tooltip
+        title="set priority"
+        placement="left"
+        TransitionComponent={Zoom}
+        arrow
+      >
         <MenuItem disableGutters={true}>
           <Priority control={control} />
         </MenuItem>
+        </Tooltip>
       </Menu>
       {hasActiveTasks && <SortTodos />}
     </Box>

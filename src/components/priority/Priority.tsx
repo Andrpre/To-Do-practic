@@ -54,13 +54,13 @@ const Priority: React.FC<IPriorityProps> = ({
                 ? () => null
                 : ExpandMoreIcon,
               sx: {
-                padding: isCompact ? "0 !important" : "8px",
+                padding: isCompact ? "0 !important" : "0 8px",
               },
             }}
             className={
               isCompact
                 ? style["priority-compact"]
-                : style.priority
+                : ""
             }
           >
             <MenuItem value={TodoPriority.NO_PRIORITY}>
