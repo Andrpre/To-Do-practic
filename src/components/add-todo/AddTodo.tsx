@@ -13,6 +13,7 @@ import style from "./style.module.scss";
 import { TodoPriority } from "../../App";
 import { useTodo } from "../../utils/TodoContext";
 import TodoOptions from "../todo-options/TodoOptions";
+import ImportantLabel from "../important-label/ImportantLabel";
 
 const AddTodo: React.FC = () => {
   const { addTask } = useTodo();
@@ -59,7 +60,7 @@ const AddTodo: React.FC = () => {
             />
           )}
         />
-        <TodoOptions control={control} />
+        <ImportantLabel control={control} />
         {!isEmpty && (
           <Tooltip
             title="add task"
