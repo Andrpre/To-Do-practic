@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Collapse,
   Link,
   List,
   Tooltip,
@@ -13,6 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
+import { TransitionGroup } from "react-transition-group";
 
 const TodoList: React.FC = () => {
   const { todos, clearCompletedTodos } = useTodo();
@@ -25,18 +27,34 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      {currentTodos.length !== 0 ? (
-        <List
-          className={style["tasks"]}
-          sx={{ padding: 0 }}
-        >
-          {currentTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
+      {/* {currentTodos.length !== 0 ? (
+        <List className={style.tasks} sx={{ padding: 0 }}>
+          <TransitionGroup component={null}>
+            {currentTodos.map((todo) => (
+              <Collapse key={todo.id}>
+                <TodoItem todo={todo} />
+              </Collapse>
+            ))}
+          </TransitionGroup>
         </List>
       ) : (
         <Box>no one task</Box>
-      )}
+      )} */}
+      <List className={style.tasks} sx={{ padding: 0 }}>
+        <TransitionGroup component={null}>
+          {currentTodos.length !== 0 ? (
+            currentTodos.map((todo) => (
+              <Collapse key={todo.id} in>
+                <TodoItem todo={todo} />
+              </Collapse>
+            ))
+          ) : (
+            <Collapse component="li" in>
+              <Box>no one task</Box>
+            </Collapse>
+          )}
+        </TransitionGroup>
+      </List>
       {completedTodos.length !== 0 && (
         <Box className={style.completed}>
           <Accordion
@@ -89,12 +107,16 @@ const TodoList: React.FC = () => {
               }}
             >
               <List
-                className={style["tasks"]}
+                className={style.tasks}
                 sx={{ padding: 0 }}
               >
-                {completedTodos.map((todo) => (
-                  <TodoItem key={todo.id} todo={todo} />
-                ))}
+                <TransitionGroup component={null}>
+                  {completedTodos.map((todo) => (
+                    <Collapse key={todo.id} in>
+                      <TodoItem todo={todo} />
+                    </Collapse>
+                  ))}
+                </TransitionGroup>
               </List>
             </AccordionDetails>
           </Accordion>
