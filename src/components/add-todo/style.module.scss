@@ -35,12 +35,3 @@
     }
   }
 }
-
-@media (width <=630px) {
-  .form {
-    &__add-task {
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-  }
-}
