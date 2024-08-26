@@ -5,17 +5,17 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { Todo, TodoPriority } from "../App";
+import { Todo } from "../App";
 
 interface TodoContextType {
   todos: Todo[];
-  addTask: (text: string, priority: TodoPriority) => void;
+  addTask: (text: string, important: boolean) => void;
   removeTask: (id: number) => void;
   toggleComplete: (id: number) => void;
   clearCompletedTodos: () => void;
   updateTodo: (id: number, updates: Partial<Todo>) => void;
   sortTodos: (
-    type: "priority" | "date",
+    type: "important" | "date",
     order: "asc" | "desc"
   ) => void;
 }
@@ -29,7 +29,7 @@ export const TodoProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  
+
   // Загружаем задачи из localStorage при загрузке компонента
   useEffect(() => {
     const savedTodos = localStorage.getItem("todos");
@@ -37,20 +37,17 @@ export const TodoProvider: React.FC<{
       setTodos(JSON.parse(savedTodos));
     }
   }, []);
-  
+
   // Сохраняем задачи в localStorage при изменении todos
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const addTask = (
-    text: string,
-    priority: TodoPriority
-  ) => {
+  const addTask = (text: string, important: boolean) => {
     const newTodo: Todo = {
       id: Date.now(),
       text,
-      priority,
+      important,
       completed: false,
     };
     setTodos([newTodo, ...todos]);
@@ -88,7 +85,7 @@ export const TodoProvider: React.FC<{
   };
 
   const sortTodos = (
-    type: "priority" | "date",
+    type: "important" | "date",
     order: "asc" | "desc"
   ) => {
     setTodos((prevTodos) => {
@@ -101,17 +98,9 @@ export const TodoProvider: React.FC<{
 
       const sortFunction = (a: Todo, b: Todo) => {
         let comparison = 0;
-        if (type === "priority") {
-          const priorityValues = {
-            [TodoPriority.NO_PRIORITY]: 0,
-            [TodoPriority.LOW]: 1,
-            [TodoPriority.MEDIUM]: 2,
-            [TodoPriority.HIGH]: 3,
-            [TodoPriority.URGENT]: 4,
-          };
+        if (type === "important") {
           comparison =
-            priorityValues[a.priority] -
-            priorityValues[b.priority];
+            Number(a.important) - Number(b.important);
         } else if (type === "date") {
           comparison = a.id - b.id;
         }

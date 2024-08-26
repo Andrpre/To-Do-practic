@@ -16,6 +16,7 @@ const Header: React.FC = () => {
   return (
     <section className={style.header}>
       <Tooltip
+        disableInteractive={false}
         disableFocusListener={true}
         open={logoDone}
         title={

@@ -4,14 +4,12 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  IconButton,
   Link,
   List,
   Tooltip,
   Zoom,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import DeleteIcon from "@mui/icons-material/Delete";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";

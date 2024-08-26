@@ -1,6 +1,11 @@
 import { createTheme } from "@mui/material";
 
 export const theme = createTheme({
+  palette: {
+    important: {
+      main: "#970000",
+    },
+  },
   typography: {
     fontFamily:
       '"Roboto Condensed", "Helvetica", "Arial", sans-serif',
@@ -55,17 +60,21 @@ export const theme = createTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
-        //   width: "0.9em",
-        //   height: "0.9em",
-        backgroundColor: "var(--main-bg)",
-        border: "none",
+          color: "var(--disabled-color)",
+          border: "none",
+          "&.Mui-selected": {
+            backgroundColor: "transparent",
+          },
+          "&:hover, &.Mui-selected:hover": {
+            backgroundColor: "var(--main-bg)",
+            filter: "brightness(95%)",
+          },
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: "var(--main-radius)",
           fontSize: "1rem",
           height: "25px",
         },
@@ -74,5 +83,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTooltip: {
+      defaultProps: {
+        disableInteractive: true,
+      },
+    },
+  },
+  shape: {
+    borderRadius: 5,
   },
 });

@@ -33,13 +33,13 @@ const SortTodos: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleSortPriorityDesc = () => {
-    sortTodos("priority", "desc");
+  const handleSortImportantDesc = () => {
+    sortTodos("important", "desc");
     handleClose();
   };
 
-  const handleSortPriorityAsc = () => {
-    sortTodos("priority", "asc");
+  const handleSortImportantAsc = () => {
+    sortTodos("important", "asc");
     handleClose();
   };
 
@@ -89,35 +89,35 @@ const SortTodos: React.FC = () => {
         }}
       >
         <Tooltip
-          title="priority first"
+          title="important first"
           placement="right"
           TransitionComponent={Zoom}
           arrow
         >
-          <MenuItem onClick={handleSortPriorityDesc}>
+          <MenuItem onClick={handleSortImportantDesc}>
             <ListItemIcon>
               <SouthRoundedIcon
                 fontSize="small"
                 sx={{ color: "var(--text-color)" }}
               />
             </ListItemIcon>
-            <ListItemText>priority</ListItemText>
+            <ListItemText>important</ListItemText>
           </MenuItem>
         </Tooltip>
         <Tooltip
-          title="not priority first"
+          title="not important first"
           placement="right"
           TransitionComponent={Zoom}
           arrow
         >
-          <MenuItem onClick={handleSortPriorityAsc}>
+          <MenuItem onClick={handleSortImportantAsc}>
             <ListItemIcon>
               <NorthRoundedIcon
                 fontSize="small"
                 sx={{ color: "var(--text-color)" }}
               />
             </ListItemIcon>
-            <ListItemText>priority</ListItemText>
+            <ListItemText>important</ListItemText>
           </MenuItem>
         </Tooltip>
         <Divider />

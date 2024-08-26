@@ -1,35 +1,4 @@
-.important-compact {
+.important {
   height: 40px;
-
-  &-low {
-      color: var(--low-priority-color);
-  }
-
-  &-medium {
-      color: var(--medium-priority-color);
-  }
-
-  &-high {
-      color: var(--high-priority-color);
-  }
-
-  &-urgent {
-      color: var(--urgent-priority-color);
-  }
-
-  &[aria-pressed="true"] {
-    background-color: var(--main-bg)!important;
-    outline: 2px solid var(--important-color);
-    outline-offset: -2px;
-    color: var(--important-color)!important;
-  }
-
-  &[aria-pressed="false"] {
-    color: var(--disabled-color)!important;
-  }
-
-  &:hover {
-    background-color: var(--main-bg) !important;
-    filter: brightness(95%);
-  }
+  width: 40px;
 }

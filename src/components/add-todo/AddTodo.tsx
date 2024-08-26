@@ -10,9 +10,7 @@ import {
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import style from "./style.module.scss";
-import { TodoPriority } from "../../App";
 import { useTodo } from "../../utils/TodoContext";
-import TodoOptions from "../todo-options/TodoOptions";
 import ImportantLabel from "../important-label/ImportantLabel";
 
 const AddTodo: React.FC = () => {
@@ -20,16 +18,16 @@ const AddTodo: React.FC = () => {
   const { handleSubmit, control, reset, watch } = useForm({
     defaultValues: {
       text: "",
-      priority: TodoPriority.NO_PRIORITY,
+      important: false,
     },
   });
 
   const onSubmit = (data: {
     text: string;
-    priority: TodoPriority;
+    important: boolean;
   }) => {
     if (data.text.trim().length !== 0) {
-      addTask(data.text, data.priority);
+      addTask(data.text, data.important);
       reset();
     }
   };

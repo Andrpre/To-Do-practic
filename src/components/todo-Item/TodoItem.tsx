@@ -15,10 +15,10 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
 import style from "./style.module.scss";
-import { Todo, TodoPriority } from "../../App";
+import { Todo } from "../../App";
 import { useForm } from "react-hook-form";
 import { useTodo } from "../../utils/TodoContext";
-import Priority from "../priority/Priority";
+import ImportantLabel from "../important-label/ImportantLabel";
 
 interface ITodoItemProps {
   todo: Todo;
@@ -28,7 +28,7 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
   const { toggleComplete, removeTask } = useTodo();
   const { control } = useForm({
     defaultValues: {
-      priority: todo.priority,
+      important: todo.important,
     },
   });
   return (
@@ -36,19 +36,12 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
       disableGutters={true}
       disablePadding={true}
       className={style["tasks-item"]}
-      sx={{
-        outline:
-          todo.priority === TodoPriority.URGENT
-            ? "2px solid var(--urgent-priority-color)"
-            : "",
-        outlineOffset: "-2px",
-      }}
       secondaryAction={
         <>
-          <Priority
+          <ImportantLabel
             control={control}
             todoId={todo.id}
-            isCompact={true}
+            inTask={true}
           />
           <Tooltip
             title="delete task"
@@ -63,10 +56,9 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
             >
               <CloseIcon
                 sx={{
-                  color:
-                    todo.priority === TodoPriority.URGENT
-                      ? "var(--urgent-priority-color)"
-                      : "var(--main-color)",
+                  color: todo.important
+                    ? "var(--important-color)"
+                    : "var(--main-color)",
                 }}
               />
             </IconButton>
@@ -86,20 +78,18 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
           icon={
             <RadioButtonUncheckedIcon
               sx={{
-                color:
-                  todo.priority === TodoPriority.URGENT
-                    ? "var(--urgent-priority-color)"
-                    : "var(--main-color)",
+                color: todo.important
+                  ? "var(--important-color)"
+                  : "var(--main-color)",
               }}
             />
           }
           checkedIcon={
             <RadioButtonCheckedIcon
               sx={{
-                color:
-                  todo.priority === TodoPriority.URGENT
-                    ? "var(--urgent-priority-color)"
-                    : "var(--main-color)",
+                color: todo.important
+                  ? "var(--important-color)"
+                  : "var(--main-color)",
               }}
             />
           }
@@ -111,10 +101,9 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
               : "none",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            color:
-              todo.priority === TodoPriority.URGENT
-                ? "var(--urgent-priority-color)"
-                : "var(--main-color)",
+            color: todo.important
+              ? "var(--important-color)"
+              : "var(--main-color)",
           }}
         >
           {todo.text}

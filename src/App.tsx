@@ -8,16 +8,8 @@ import { Box } from "@mui/material";
 export interface Todo {
   id: number;
   text: string;
-  priority: TodoPriority;
+  important: boolean;
   completed: boolean;
-}
-
-export enum TodoPriority {
-  NO_PRIORITY = "priority",
-  LOW = "low",
-  MEDIUM = "medium",
-  HIGH = "high",
-  URGENT = "urgent",
 }
 
 const App: React.FC = () => {
