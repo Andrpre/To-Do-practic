@@ -14,10 +14,32 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 import { TransitionGroup } from "react-transition-group";
 
 const TodoList: React.FC = () => {
-  const { todos, clearCompletedTodos } = useTodo();
+  const { todos, clearCompletedTodos, updateTodosOrder } = useTodo();
+
+  const handleDragDrop = (results: DropResult) => {
+    const { source, destination, type } = results;
+
+    if(!destination) return;
+    if(source.index === destination.index) return;
+    if(type === "group") {
+      const reorderedTodos = [...todos];
+
+      const [removedTask] = reorderedTodos.splice(source.index, 1);
+      reorderedTodos.splice(destination.index, 0, removedTask);
+
+      return updateTodosOrder(reorderedTodos);
+    }
+  }
+
   const currentTodos = todos.filter(
     (task) => task.completed === false
   );
@@ -27,34 +49,47 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      {/* {currentTodos.length !== 0 ? (
-        <List className={style.tasks} sx={{ padding: 0 }}>
-          <TransitionGroup component={null}>
-            {currentTodos.map((todo) => (
-              <Collapse key={todo.id}>
-                <TodoItem todo={todo} />
-              </Collapse>
-            ))}
-          </TransitionGroup>
-        </List>
-      ) : (
-        <Box>no one task</Box>
-      )} */}
-      <List className={style.tasks} sx={{ padding: 0 }}>
-        <TransitionGroup component={null}>
-          {currentTodos.length !== 0 ? (
-            currentTodos.map((todo) => (
-              <Collapse key={todo.id} in>
-                <TodoItem todo={todo} />
-              </Collapse>
-            ))
-          ) : (
-            <Collapse component="li" in>
-              <Box>no one task</Box>
-            </Collapse>
+      <DragDropContext onDragEnd={handleDragDrop}>
+        <Droppable droppableId="ROOT" type="group">
+          {(provided) => (
+            <List
+              className={style.tasks}
+              sx={{ padding: 0 }}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              <TransitionGroup component={null}>
+                {currentTodos.length !== 0 ? (
+                  currentTodos.map((todo, index) => (
+                    <Draggable
+                      draggableId={String(todo.id)}
+                      key={todo.id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <Collapse
+                          key={todo.id}
+                          in
+                          {...provided.dragHandleProps}
+                          {...provided.draggableProps}
+                          ref={provided.innerRef}
+                        >
+                          <TodoItem todo={todo} />
+                        </Collapse>
+                      )}
+                    </Draggable>
+                  ))
+                ) : (
+                  <Collapse component="li" in>
+                    <Box>no one task</Box>
+                  </Collapse>
+                )}
+                {provided.placeholder}
+              </TransitionGroup>
+            </List>
           )}
-        </TransitionGroup>
-      </List>
+        </Droppable>
+      </DragDropContext>
       {completedTodos.length !== 0 && (
         <Box className={style.completed}>
           <Accordion

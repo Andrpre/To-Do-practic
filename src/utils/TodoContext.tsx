@@ -18,6 +18,7 @@ interface TodoContextType {
     type: "important" | "date",
     order: "asc" | "desc"
   ) => void;
+  updateTodosOrder: (newOrder: Todo[]) => void;
 }
 
 const TodoContext = createContext<
@@ -114,6 +115,10 @@ export const TodoProvider: React.FC<{
     });
   };
 
+  const updateTodosOrder = (newOrder: Todo[]) => {
+    setTodos(newOrder);
+  };
+
   return (
     <TodoContext.Provider
       value={{
@@ -124,6 +129,7 @@ export const TodoProvider: React.FC<{
         clearCompletedTodos,
         updateTodo,
         sortTodos,
+        updateTodosOrder,
       }}
     >
       {children}
