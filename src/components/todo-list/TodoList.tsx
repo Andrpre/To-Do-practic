@@ -4,7 +4,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Collapse,
   Link,
   List,
   Tooltip,
@@ -20,28 +19,45 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { TransitionGroup } from "react-transition-group";
 
 const TodoList: React.FC = () => {
-  const { todos, clearCompletedTodos, updateTodosOrder } = useTodo();
+  const { todos, clearCompletedTodos, updateTodosOrder } =
+    useTodo();
 
+  // Обрабатываем перетаскивание только активных задач
   const handleDragDrop = (results: DropResult) => {
-    const { source, destination, type } = results;
+    const { source, destination } = results;
 
-    if(!destination) return;
-    if(source.index === destination.index) return;
-    if(type === "group") {
-      const reorderedTodos = [...todos];
+    if (!destination) return;
+    if (source.index === destination.index) return;
 
-      const [removedTask] = reorderedTodos.splice(source.index, 1);
-      reorderedTodos.splice(destination.index, 0, removedTask);
+    // Создаем новый массив только для активных задач
+    const currentTodos = todos.filter(
+      (task) => !task.completed
+    );
 
-      return updateTodosOrder(reorderedTodos);
-    }
-  }
+    // Меняем порядок активных задач
+    const [reorderedTask] = currentTodos.splice(
+      source.index,
+      1
+    );
+    currentTodos.splice(
+      destination.index,
+      0,
+      reorderedTask
+    );
+
+    // Обновляем массив в глобальном состоянии
+    const reorderedTodos = [
+      ...currentTodos, // Сначала активные
+      ...todos.filter((task) => task.completed), // Завершенные остаются на месте
+    ];
+
+    updateTodosOrder(reorderedTodos);
+  };
 
   const currentTodos = todos.filter(
-    (task) => task.completed === false
+    (task) => !task.completed
   );
   const completedTodos = todos.filter(
     (task) => task.completed
@@ -58,34 +74,29 @@ const TodoList: React.FC = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              <TransitionGroup component={null}>
-                {currentTodos.length !== 0 ? (
-                  currentTodos.map((todo, index) => (
-                    <Draggable
-                      draggableId={String(todo.id)}
-                      key={todo.id}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <Collapse
-                          key={todo.id}
-                          in
-                          {...provided.dragHandleProps}
-                          {...provided.draggableProps}
-                          ref={provided.innerRef}
-                        >
-                          <TodoItem todo={todo} />
-                        </Collapse>
-                      )}
-                    </Draggable>
-                  ))
-                ) : (
-                  <Collapse component="li" in>
-                    <Box>no one task</Box>
-                  </Collapse>
-                )}
-                {provided.placeholder}
-              </TransitionGroup>
+              {currentTodos.length !== 0 ? (
+                currentTodos.map((todo, index) => (
+                  <Draggable
+                    draggableId={String(todo.id)}
+                    key={todo.id}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <Box
+                        key={todo.id}
+                        {...provided.dragHandleProps}
+                        {...provided.draggableProps}
+                        ref={provided.innerRef}
+                      >
+                        <TodoItem todo={todo} />
+                      </Box>
+                    )}
+                  </Draggable>
+                ))
+              ) : (
+                <Box>no one task</Box>
+              )}
+              {provided.placeholder}
             </List>
           )}
         </Droppable>
@@ -145,13 +156,9 @@ const TodoList: React.FC = () => {
                 className={style.tasks}
                 sx={{ padding: 0 }}
               >
-                <TransitionGroup component={null}>
-                  {completedTodos.map((todo) => (
-                    <Collapse key={todo.id} in>
-                      <TodoItem todo={todo} />
-                    </Collapse>
-                  ))}
-                </TransitionGroup>
+                {completedTodos.map((todo) => (
+                  <TodoItem key={todo.id} todo={todo} />
+                ))}
               </List>
             </AccordionDetails>
           </Accordion>

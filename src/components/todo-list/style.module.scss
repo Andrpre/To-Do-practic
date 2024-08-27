@@ -1,11 +1,11 @@
 .tasks {
     display: flex;
     flex-direction: column;
-    gap: 5px;
 }
 
 .completed {
     position: relative;
+    margin-top: -5px;
 
     &__tasks {
         display: flex;

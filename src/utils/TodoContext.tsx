@@ -55,8 +55,8 @@ export const TodoProvider: React.FC<{
   };
 
   const toggleComplete = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
         todo.id === id
           ? { ...todo, completed: !todo.completed }
           : todo
@@ -116,7 +116,7 @@ export const TodoProvider: React.FC<{
   };
 
   const updateTodosOrder = (newOrder: Todo[]) => {
-    setTodos(newOrder);
+    setTodos([...newOrder]);
   };
 
   return (
