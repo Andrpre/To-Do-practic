@@ -24,6 +24,8 @@ const TodoList: React.FC = () => {
   const { todos, clearCompletedTodos, updateTodosOrder } =
     useTodo();
 
+  console.log(todos);
+
   // Обрабатываем перетаскивание только активных задач
   const handleDragDrop = (results: DropResult) => {
     const { source, destination } = results;
@@ -33,7 +35,7 @@ const TodoList: React.FC = () => {
 
     // Создаем новый массив только для активных задач
     const currentTodos = todos.filter(
-      (task) => !task.completed
+      (task) => !task.completed && !task.deleted
     );
 
     // Меняем порядок активных задач
@@ -57,10 +59,10 @@ const TodoList: React.FC = () => {
   };
 
   const currentTodos = todos.filter(
-    (task) => !task.completed
+    (task) => !task.completed && !task.deleted
   );
   const completedTodos = todos.filter(
-    (task) => task.completed
+    (task) => task.completed && !task.deleted
   );
 
   return (

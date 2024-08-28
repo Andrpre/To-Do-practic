@@ -10,6 +10,7 @@ export interface Todo {
   text: string;
   important: boolean;
   completed: boolean;
+  deleted: boolean;
 }
 
 const App: React.FC = () => {
