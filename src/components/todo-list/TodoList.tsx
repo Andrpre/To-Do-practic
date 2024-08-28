@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -21,10 +21,10 @@ import {
 } from "react-beautiful-dnd";
 
 const TodoList: React.FC = () => {
-  const { todos, clearCompletedTodos, updateTodosOrder } =
-    useTodo();
+  const { todos, clearCompletedTodos, updateTodosOrder } = useTodo();
 
-  console.log(todos);
+  // Состояние для управления раскрытием Accordion
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   // Обрабатываем перетаскивание только активных задач
   const handleDragDrop = (results: DropResult) => {
@@ -39,15 +39,8 @@ const TodoList: React.FC = () => {
     );
 
     // Меняем порядок активных задач
-    const [reorderedTask] = currentTodos.splice(
-      source.index,
-      1
-    );
-    currentTodos.splice(
-      destination.index,
-      0,
-      reorderedTask
-    );
+    const [reorderedTask] = currentTodos.splice(source.index, 1);
+    currentTodos.splice(destination.index, 0, reorderedTask);
 
     // Обновляем массив в глобальном состоянии
     const reorderedTodos = [
@@ -58,9 +51,7 @@ const TodoList: React.FC = () => {
     updateTodosOrder(reorderedTodos);
   };
 
-  const currentTodos = todos.filter(
-    (task) => !task.completed && !task.deleted
-  );
+  const currentTodos = todos.filter((task) => !task.completed && !task.deleted);
   const completedTodos = todos.filter(
     (task) => task.completed && !task.deleted
   );
@@ -112,6 +103,8 @@ const TodoList: React.FC = () => {
               backgroundColor: "transparent",
               boxShadow: "none",
             }}
+            expanded={expanded}
+            onChange={() => setExpanded(!expanded)}
           >
             <Box className={style.completed__summary}>
               <AccordionSummary
@@ -132,32 +125,31 @@ const TodoList: React.FC = () => {
               >
                 {completedTodos.length} completed
               </AccordionSummary>
-              <Tooltip
-                title="delete all completed tasks"
-                placement="right"
-                TransitionComponent={Zoom}
-                arrow
-              >
-                <Link
-                  sx={{
-                    color: "var(--main-color)",
-                  }}
-                  component="button"
-                  onClick={() => clearCompletedTodos()}
+              {expanded && (
+                <Tooltip
+                  title="delete all completed tasks"
+                  placement="right"
+                  TransitionComponent={Zoom}
+                  arrow
                 >
-                  clear all
-                </Link>
-              </Tooltip>
+                  <Link
+                    sx={{
+                      color: "var(--main-color)",
+                    }}
+                    component="button"
+                    onClick={() => clearCompletedTodos()}
+                  >
+                    clear all
+                  </Link>
+                </Tooltip>
+              )}
             </Box>
             <AccordionDetails
               sx={{
                 padding: 0,
               }}
             >
-              <List
-                className={style.tasks}
-                sx={{ padding: 0 }}
-              >
+              <List className={style.tasks} sx={{ padding: 0 }}>
                 {completedTodos.map((todo) => (
                   <TodoItem key={todo.id} todo={todo} />
                 ))}

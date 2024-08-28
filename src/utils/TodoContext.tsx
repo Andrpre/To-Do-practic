@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Todo } from "../App";
 import { Button, Snackbar } from "@mui/material";
+import ReplayIcon from "@mui/icons-material/Replay";
 
 interface TodoContextType {
   todos: Todo[];
@@ -15,16 +16,11 @@ interface TodoContextType {
   toggleComplete: (id: number) => void;
   clearCompletedTodos: () => void;
   updateTodo: (id: number, updates: Partial<Todo>) => void;
-  sortTodos: (
-    type: "important" | "date",
-    order: "asc" | "desc"
-  ) => void;
+  sortTodos: (type: "important" | "date", order: "asc" | "desc") => void;
   updateTodosOrder: (newOrder: Todo[]) => void;
 }
 
-const TodoContext = createContext<
-  TodoContextType | undefined
->(undefined);
+const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 // Провайдер контекста
 export const TodoProvider: React.FC<{
@@ -32,12 +28,9 @@ export const TodoProvider: React.FC<{
 }> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<
-    string | null
-  >(null);
-  const [undoAction, setUndoAction] = useState<
-    (() => void) | null
-  >(null);
+  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
+  const [undoAction, setUndoAction] = useState<(() => void) | null>(null);
+  const [snackbarKey, setSnackbarKey] = useState<number>(0); // Для управления уникальностью Snackbar
 
   // Загружаем задачи из localStorage при загрузке компонента
   useEffect(() => {
@@ -66,111 +59,77 @@ export const TodoProvider: React.FC<{
   const toggleComplete = (id: number) => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed }
-          : todo
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
-  // const removeTask = (id: number) => {
-  //   setTodos(todos.filter((todo) => todo.id !== id));
-  // };
-
   // "Мягкое" удаление задачи (ставим deleted: true)
   const removeTask = (id: number) => {
-    const taskToRemove = todos.find(
-      (todo) => todo.id === id
-    );
+    const taskToRemove = todos.find((todo) => todo.id === id);
     if (!taskToRemove) return;
 
     setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, deleted: true } : todo
-      )
+      todos.map((todo) => (todo.id === id ? { ...todo, deleted: true } : todo))
     );
-    showSnackbar("Task deleted", () => restoreTask(id)); // Показать Snackbar с undo
+    
+    handleCloseSnackbar();
+    showSnackbar("task deleted", () => restoreTask(id));
   };
 
   // Восстановление задачи
   const restoreTask = (id: number) => {
     setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, deleted: false } : todo
-      )
+      todos.map((todo) => (todo.id === id ? { ...todo, deleted: false } : todo))
     );
+    
+    handleCloseSnackbar();
   };
-
-  // const clearCompletedTodos = () => {
-  //   setTodos(
-  //     todos.filter((todo) => todo.completed !== true)
-  //   );
-  // };
 
   // Удаление всех завершенных задач (мягкое)
   const clearCompletedTodos = () => {
-    const completedTodos = todos.filter(
-      (todo) => todo.completed
-    );
+    const completedTodos = todos.filter((todo) => todo.completed);
     if (completedTodos.length === 0) return;
 
-    // Ставим deleted: true для завершённых задач
     setTodos(
-      todos.map((todo) =>
-        todo.completed ? { ...todo, deleted: true } : todo
-      )
+      todos.map((todo) => (todo.completed ? { ...todo, deleted: true } : todo))
     );
-    showSnackbar(
-      "All completed tasks deleted",
-      undoClearCompleted // Восстановление завершённых задач при нажатии "Undo"
-    );
+    
+    handleCloseSnackbar();
+    showSnackbar("all completed tasks deleted", undoClearCompleted);
   };
 
   // Восстановление всех завершённых задач
   const undoClearCompleted = () => {
     setTodos(
-      todos.map((todo) =>
-        todo.completed ? { ...todo, deleted: false } : todo
-      )
+      todos.map((todo) => (todo.completed ? { ...todo, deleted: false } : todo))
     );
+    
+    handleCloseSnackbar();
   };
 
-  const updateTodo = (
-    id: number,
-    updates: Partial<Todo>
-  ) => {
+  const updateTodo = (id: number, updates: Partial<Todo>) => {
     setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, ...updates } : todo
-      )
+      prevTodos.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo))
     );
   };
 
-  const sortTodos = (
-    type: "important" | "date",
-    order: "asc" | "desc"
-  ) => {
+  const sortTodos = (type: "important" | "date", order: "asc" | "desc") => {
     setTodos((prevTodos) => {
-      const activeTodos = prevTodos.filter(
-        (todo) => !todo.completed
-      );
-      const completedTodos = prevTodos.filter(
-        (todo) => todo.completed
-      );
+      const activeTodos = prevTodos.filter((todo) => !todo.completed);
+      const completedTodos = prevTodos.filter((todo) => todo.completed);
 
       const sortFunction = (a: Todo, b: Todo) => {
         let comparison = 0;
         if (type === "important") {
-          comparison =
-            Number(a.important) - Number(b.important);
+          comparison = Number(a.important) - Number(b.important);
         } else if (type === "date") {
           comparison = a.id - b.id;
         }
         return order === "asc" ? comparison : -comparison;
       };
 
-      const sortedActiveTodos =
-        activeTodos.sort(sortFunction);
+      const sortedActiveTodos = activeTodos.sort(sortFunction);
 
       return [...sortedActiveTodos, ...completedTodos];
     });
@@ -181,19 +140,16 @@ export const TodoProvider: React.FC<{
   };
 
   // Показать Snackbar
-  const showSnackbar = (
-    message: string,
-    action?: () => void
-  ) => {
+  const showSnackbar = (message: string, action?: () => void) => {
     setSnackbarMessage(message);
     setUndoAction(() => action || null);
     setSnackbarOpen(true);
+    setSnackbarKey((prevKey) => prevKey + 1);
   };
 
-  // Фактическое удаление после закрытия Snackbar
-  const handleSnackbarClose = () => {
+  // Закрыть Snackbar
+  const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
-    setTodos(todos.filter((todo) => !todo.deleted)); // Удаляем задачи, помеченные как deleted
   };
 
   return (
@@ -211,13 +167,14 @@ export const TodoProvider: React.FC<{
     >
       {children}
       <Snackbar
+        key={snackbarKey} // Уникальный ключ для каждого Snackbar
         open={snackbarOpen}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "center",
         }}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
+        autoHideDuration={2500}
+        onClose={handleCloseSnackbar}
         message={snackbarMessage}
         action={
           undoAction && (
@@ -228,10 +185,12 @@ export const TodoProvider: React.FC<{
                   backgroundColor: "var(--main-bg)",
                   filter: "brightness(90%)",
                 },
+                textTransform: "none",
                 color: "var(--text-color)",
               }}
               size="small"
               onClick={undoAction}
+              endIcon={<ReplayIcon />}
             >
               undo
             </Button>
@@ -246,9 +205,7 @@ export const TodoProvider: React.FC<{
 export const useTodo = () => {
   const context = useContext(TodoContext);
   if (!context) {
-    throw new Error(
-      "useTodo must be used within a TodoProvider"
-    );
+    throw new Error("useTodo must be used within a TodoProvider");
   }
   return context;
 };

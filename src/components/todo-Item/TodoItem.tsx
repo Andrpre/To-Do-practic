@@ -95,6 +95,7 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
           }
         />
         <ListItemText
+        disableTypography={true}
           sx={{
             textDecoration: todo.completed
               ? "line-through"
