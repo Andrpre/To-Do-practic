@@ -7,11 +7,14 @@ import {
   Link,
   List,
   Tooltip,
+  Typography,
   Zoom,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TodoItem from "../todo-Item/TodoItem";
 import style from "./style.module.scss";
+import Player from "lottie-react";
+import animationData from "../../lotties/all-tasks-completed.json";
 import { useTodo } from "../../utils/TodoContext";
 import {
   DragDropContext,
@@ -87,7 +90,15 @@ const TodoList: React.FC = () => {
                   </Draggable>
                 ))
               ) : (
-                <Box>no one task</Box>
+                <Box className={style["all-tasks-completed"]}>
+                  <Player
+                    autoplay
+                    loop={false}
+                    animationData={animationData}
+                    style={{ width: "20px" }}
+                  />
+                  <Typography variant="body2">all tasks completed</Typography>
+                </Box>
               )}
               {provided.placeholder}
             </List>

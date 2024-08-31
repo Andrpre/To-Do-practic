@@ -3,6 +3,23 @@
     flex-direction: column;
 }
 
+.all-tasks-completed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--main-color);
+    animation: alltaskscompleted 0.4s ease-in-out forwards;
+}
+
+@keyframes alltaskscompleted {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+
 .completed {
     position: relative;
     margin-top: -5px;
