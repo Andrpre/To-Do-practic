@@ -22,7 +22,6 @@ interface TodoContextType {
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
-// Провайдер контекста
 export const TodoProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
@@ -30,9 +29,8 @@ export const TodoProvider: React.FC<{
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
   const [undoAction, setUndoAction] = useState<(() => void) | null>(null);
-  const [snackbarKey, setSnackbarKey] = useState<number>(0); // Для управления уникальностью Snackbar
+  const [snackbarKey, setSnackbarKey] = useState<number>(0);
 
-  // Загружаем задачи из localStorage при загрузке компонента
   useEffect(() => {
     const savedTodos = localStorage.getItem("todos");
     if (savedTodos) {
@@ -40,7 +38,6 @@ export const TodoProvider: React.FC<{
     }
   }, []);
 
-  // Сохраняем задачи в localStorage при изменении todos
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
@@ -64,7 +61,6 @@ export const TodoProvider: React.FC<{
     );
   };
 
-  // "Мягкое" удаление задачи (ставим deleted: true)
   const removeTask = (id: number) => {
     const taskToRemove = todos.find((todo) => todo.id === id);
     if (!taskToRemove) return;
@@ -72,21 +68,19 @@ export const TodoProvider: React.FC<{
     setTodos(
       todos.map((todo) => (todo.id === id ? { ...todo, deleted: true } : todo))
     );
-    
+
     handleCloseSnackbar();
     showSnackbar("task deleted", () => restoreTask(id));
   };
 
-  // Восстановление задачи
   const restoreTask = (id: number) => {
     setTodos(
       todos.map((todo) => (todo.id === id ? { ...todo, deleted: false } : todo))
     );
-    
+
     handleCloseSnackbar();
   };
 
-  // Удаление всех завершенных задач (мягкое)
   const clearCompletedTodos = () => {
     const completedTodos = todos.filter((todo) => todo.completed);
     if (completedTodos.length === 0) return;
@@ -94,17 +88,16 @@ export const TodoProvider: React.FC<{
     setTodos(
       todos.map((todo) => (todo.completed ? { ...todo, deleted: true } : todo))
     );
-    
+
     handleCloseSnackbar();
     showSnackbar("all completed tasks deleted", undoClearCompleted);
   };
 
-  // Восстановление всех завершённых задач
   const undoClearCompleted = () => {
     setTodos(
       todos.map((todo) => (todo.completed ? { ...todo, deleted: false } : todo))
     );
-    
+
     handleCloseSnackbar();
   };
 
@@ -139,7 +132,6 @@ export const TodoProvider: React.FC<{
     setTodos([...newOrder]);
   };
 
-  // Показать Snackbar
   const showSnackbar = (message: string, action?: () => void) => {
     setSnackbarMessage(message);
     setUndoAction(() => action || null);
@@ -147,9 +139,9 @@ export const TodoProvider: React.FC<{
     setSnackbarKey((prevKey) => prevKey + 1);
   };
 
-  // Закрыть Snackbar
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+    setTodos((prevTodos) => prevTodos.filter((todo) => !todo.deleted));
   };
 
   return (
@@ -167,7 +159,7 @@ export const TodoProvider: React.FC<{
     >
       {children}
       <Snackbar
-        key={snackbarKey} // Уникальный ключ для каждого Snackbar
+        key={snackbarKey}
         open={snackbarOpen}
         anchorOrigin={{
           vertical: "bottom",
