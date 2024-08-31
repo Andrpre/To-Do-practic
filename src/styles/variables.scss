@@ -1,18 +1,11 @@
 :root {
     --main-color: #877cff;
-    --disabled-color: #b8b8b8;
+    --disabled-color: #8a8a8a;
+    // --disabled-color: #b8b8b8;
     --important-color: #970000;
+    --delete-color: #390000;
     --text-color: #000000;
     --main-bg: #ffffff;
     --main-radius: 5px;
     --text-size: 16px;
-    // priority
-    --low-priority-bg: #dbeddb;
-    --low-priority-color: green;
-    --medium-priority-bg: #d3e5ef;
-    --medium-priority-color: steelblue;
-    --high-priority-bg: #f9e4bc;
-    --high-priority-color: #b9b925;
-    --urgent-priority-bg: #ffe2dd;
-    --urgent-priority-color: #69120f;
 }

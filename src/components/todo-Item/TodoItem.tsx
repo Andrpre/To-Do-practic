@@ -2,69 +2,31 @@ import React from "react";
 
 import {
   ListItemText,
-  IconButton,
   Checkbox,
-  Tooltip,
-  Zoom,
   ListItemButton,
   ListItem,
 } from "@mui/material";
 
-import CloseIcon from "@mui/icons-material/Close";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
 import style from "./style.module.scss";
 import { Todo } from "../../App";
-import { useForm } from "react-hook-form";
 import { useTodo } from "../../utils/TodoContext";
-import ImportantLabel from "../important-label/ImportantLabel";
+import TodoOptions from "../todo-options/TodoOptions";
 
 interface ITodoItemProps {
   todo: Todo;
 }
 
 const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
-  const { toggleComplete, removeTask } = useTodo();
-  const { control } = useForm({
-    defaultValues: {
-      important: todo.important,
-    },
-  });
+  const { toggleComplete } = useTodo();
   return (
     <ListItem
       disableGutters={true}
       disablePadding={true}
       className={style["tasks-item"]}
-      secondaryAction={
-        <>
-          <ImportantLabel
-            control={control}
-            todoId={todo.id}
-            inTask={true}
-          />
-          <Tooltip
-            title="delete task"
-            placement="right"
-            TransitionComponent={Zoom}
-            arrow
-          >
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={() => removeTask(todo.id)}
-            >
-              <CloseIcon
-                sx={{
-                  color: todo.important
-                    ? "var(--important-color)"
-                    : "var(--main-color)",
-                }}
-              />
-            </IconButton>
-          </Tooltip>
-        </>
-      }
+      secondaryAction={<TodoOptions todo={todo} />}
     >
       <ListItemButton
         dense={true}
@@ -95,11 +57,9 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
           }
         />
         <ListItemText
-        disableTypography={true}
+          disableTypography={true}
           sx={{
-            textDecoration: todo.completed
-              ? "line-through"
-              : "none",
+            textDecoration: todo.completed ? "line-through" : "none",
             overflow: "hidden",
             textOverflow: "ellipsis",
             color: todo.important

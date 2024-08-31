@@ -1,4 +1,4 @@
-import { ToggleButton, Tooltip, Zoom } from "@mui/material";
+import { MenuItem, ToggleButton, Tooltip, Zoom } from "@mui/material";
 
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 
@@ -6,17 +6,20 @@ import { Controller } from "react-hook-form";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
 import clsx from "clsx";
+import { Todo } from "../../App";
 
 interface IImportantLabel {
   control: any;
-  todoId?: number;
+  todo?: Todo;
   inTask?: boolean;
+  onClose?: () => void;
 }
 
 const ImportantLabel: React.FC<IImportantLabel> = ({
   control,
-  todoId,
+  todo,
   inTask = false,
+  onClose,
 }) => {
   const { updateTodo } = useTodo();
 
@@ -28,16 +31,35 @@ const ImportantLabel: React.FC<IImportantLabel> = ({
         const handleToggle = () => {
           const newValue = !field.value; // Используем значение из формы
           field.onChange(newValue); // Изменяем значение через react-hook-form
-          todoId &&
-            updateTodo(todoId, {
+          todo?.id &&
+            updateTodo(todo.id, {
               important: newValue,
             });
+          // Закрываем меню после клика
+          if (onClose) {
+            onClose();
+          }
         };
 
-        return (
+        return inTask ? (
+          <MenuItem
+            {...field}
+            value={field.value}
+            sx={{
+              color: "var(--main-color)",
+            }}
+            onClick={handleToggle}
+          >
+            <LocalFireDepartmentIcon
+              sx={{ marginRight: "7px" }}
+              fontSize="small"
+            />{" "}
+            important
+          </MenuItem>
+        ) : (
           <Tooltip
             title="mark important"
-            placement={inTask ? "left" : "top"}
+            placement={"top"}
             TransitionComponent={Zoom}
             arrow
           >
@@ -61,10 +83,7 @@ const ImportantLabel: React.FC<IImportantLabel> = ({
               }
               className={
                 inTask
-                  ? clsx(
-                      style.important,
-                      style["important-compact"]
-                    )
+                  ? clsx(style.important, style["important-compact"])
                   : style.important
               }
             >

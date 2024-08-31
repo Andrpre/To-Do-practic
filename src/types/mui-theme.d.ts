@@ -2,10 +2,10 @@ import "@mui/material/styles";
 
 declare module "@mui/material/styles" {
   interface Palette {
-    important: Palette['primary'];
+    important: Palette["primary"];
   }
   interface PaletteOptions {
-    important?: PaletteOptions['primary'];
+    important?: PaletteOptions["primary"];
   }
 }
 
