@@ -76,9 +76,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: "1rem",
-          height: "25px",
         },
-        icon: {
+        deleteIcon: {
           color: "inherit",
         },
       },

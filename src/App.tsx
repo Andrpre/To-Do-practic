@@ -4,6 +4,7 @@ import AddTodo from "./components/add-todo/AddTodo";
 import "./styles/App.scss";
 import { TodoProvider } from "./utils/TodoContext";
 import { Box } from "@mui/material";
+import TaskLists from "./components/task-lists/TaskLists";
 
 export interface Todo {
   id: number;
@@ -19,6 +20,7 @@ const App: React.FC = () => {
       <Box className="container">
         <Header />
         <Box component="section" className="main">
+          <TaskLists />
           <AddTodo />
           <TodoList />
         </Box>

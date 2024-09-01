@@ -24,7 +24,13 @@ import {
 } from "react-beautiful-dnd";
 
 const TodoList: React.FC = () => {
-  const { todos, clearCompletedTodos, updateTodosOrder } = useTodo();
+  const {
+    lists,
+    activeListId,
+    clearCompletedTodos,
+    updateTodosOrder,
+  } = useTodo();
+  const activeList = lists.find((list) => list.id === activeListId);
 
   // Состояние для управления раскрытием Accordion
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -37,9 +43,11 @@ const TodoList: React.FC = () => {
     if (source.index === destination.index) return;
 
     // Создаем новый массив только для активных задач
-    const currentTodos = todos.filter(
+    const currentTodos = activeList?.todos.filter(
       (task) => !task.completed && !task.deleted
     );
+
+    if (!currentTodos || !activeList) return;
 
     // Меняем порядок активных задач
     const [reorderedTask] = currentTodos.splice(source.index, 1);
@@ -48,14 +56,16 @@ const TodoList: React.FC = () => {
     // Обновляем массив в глобальном состоянии
     const reorderedTodos = [
       ...currentTodos, // Сначала активные
-      ...todos.filter((task) => task.completed), // Завершенные остаются на месте
+      ...activeList.todos.filter((task) => task.completed), // Завершенные остаются на месте
     ];
 
     updateTodosOrder(reorderedTodos);
   };
 
-  const currentTodos = todos.filter((task) => !task.completed && !task.deleted);
-  const completedTodos = todos.filter(
+  const currentTodos = activeList?.todos.filter(
+    (task) => !task.completed && !task.deleted
+  );
+  const completedTodos = activeList?.todos.filter(
     (task) => task.completed && !task.deleted
   );
 
@@ -70,8 +80,8 @@ const TodoList: React.FC = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {currentTodos.length !== 0 ? (
-                currentTodos.map((todo, index) => (
+              {currentTodos?.length !== 0 ? (
+                currentTodos?.map((todo, index) => (
                   <Draggable
                     draggableId={String(todo.id)}
                     key={todo.id}
@@ -105,7 +115,8 @@ const TodoList: React.FC = () => {
           )}
         </Droppable>
       </DragDropContext>
-      {completedTodos.length !== 0 && (
+
+      {completedTodos?.length !== 0 && (
         <Box className={style.completed}>
           <Accordion
             className={style.completed__tasks}
@@ -134,7 +145,7 @@ const TodoList: React.FC = () => {
                   />
                 }
               >
-                {completedTodos.length} completed
+                {completedTodos?.length} completed
               </AccordionSummary>
               {expanded && (
                 <Tooltip
@@ -161,7 +172,7 @@ const TodoList: React.FC = () => {
               }}
             >
               <List className={style.tasks} sx={{ padding: 0 }}>
-                {completedTodos.map((todo) => (
+                {completedTodos?.map((todo) => (
                   <TodoItem key={todo.id} todo={todo} />
                 ))}
               </List>
