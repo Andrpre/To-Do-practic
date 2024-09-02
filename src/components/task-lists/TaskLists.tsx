@@ -1,5 +1,4 @@
 import {
-  Badge,
   Chip,
   IconButton,
   ListItem,
@@ -15,55 +14,46 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 const TaskLists: React.FC = () => {
   const { lists, activeListId, switchList, addList, removeList } = useTodo();
+  const visibleLists = lists.filter((list) => !list.deleted);
 
   return (
     <Stack direction="row" component="ul" className={style.lists}>
-      {lists.map((list) => (
+      {visibleLists.map((list) => (
         <ListItem
           key={list.id}
           className={style.lists__item}
           sx={{ width: "auto", padding: "0" }}
         >
-          <Badge
-            badgeContent={list.todos.length}
-            overlap="circular"
-            color="primary"
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-          >
-            <Chip
-              label={list.name}
-              onClick={
-                list.id === activeListId ? undefined : () => switchList(list.id)
-              }
-              onDelete={list.id === 1 ? undefined : () => removeList(list.id)}
-              sx={
-                list.id === activeListId
-                  ? {
-                      outline: "2px solid var(--main-color)",
-                      color: "var(--main-color)",
-                    }
-                  : {
-                      "&:hover": {
-                        backgroundColor: "var(--main-bg)",
-                        filter: "brightness(95%)",
-                      },
-                    }
-              }
-              deleteIcon={
-                <Tooltip
-                  title="delete list"
-                  placement="top"
-                  TransitionComponent={Zoom}
-                  arrow
-                >
-                  <ClearRoundedIcon />
-                </Tooltip>
-              }
-            />
-          </Badge>
+          <Chip
+            label={list.name}
+            onClick={
+              list.id === activeListId ? undefined : () => switchList(list.id)
+            }
+            onDelete={list.id === 1 ? undefined : () => removeList(list.id)}
+            sx={
+              list.id === activeListId
+                ? {
+                    outline: "2px solid var(--main-color)",
+                    color: "var(--main-color)",
+                  }
+                : {
+                    "&:hover": {
+                      backgroundColor: "var(--main-bg)",
+                      filter: "brightness(95%)",
+                    },
+                  }
+            }
+            deleteIcon={
+              <Tooltip
+                title="delete list"
+                placement="top"
+                TransitionComponent={Zoom}
+                arrow
+              >
+                <ClearRoundedIcon />
+              </Tooltip>
+            }
+          />
         </ListItem>
       ))}
       <Tooltip

@@ -13,6 +13,7 @@ interface List {
   id: number;
   name: string;
   todos: Todo[];
+  deleted: boolean;
 }
 
 interface TodoContextType {
@@ -36,7 +37,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [lists, setLists] = useState<List[]>([
-    { id: 1, name: "main", todos: [] },
+    { id: 1, name: "main", todos: [], deleted: false },
   ]); // Основной список по умолчанию
   const [activeListId, setActiveListId] = useState<number>(1); // Текущий активный список
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -49,7 +50,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
     if (savedLists) {
       setLists(JSON.parse(savedLists));
     }
-    
+
     const savedActiveListId = localStorage.getItem("activeListId");
     if (savedActiveListId) {
       setActiveListId(Number(savedActiveListId));
@@ -57,19 +58,19 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    // Фильтруем удаленные задачи перед сохранением
-    const filteredLists = lists.map(list => ({
-      ...list,
-      todos: list.todos.filter(todo => !todo.deleted),
-    }));
-
+    const filteredLists = lists
+      .filter((list) => !list.deleted)
+      .map((list) => ({
+        ...list,
+        todos: list.todos.filter((todo) => !todo.deleted),
+      }));
+  
     localStorage.setItem("lists", JSON.stringify(filteredLists));
   }, [lists]);
-  
+
   useEffect(() => {
     localStorage.setItem("activeListId", String(activeListId));
   }, [activeListId]);
-  
 
   const activeList = lists.find((list) => list.id === activeListId);
 
@@ -238,14 +239,32 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const addList = (name: string) => {
-    const newList: List = { id: Date.now(), name, todos: [] };
+    const newList: List = { id: Date.now(), name, todos: [], deleted: false };
     setLists((prevLists) => [...prevLists, newList]);
     setActiveListId(newList.id);
   };
 
   const removeList = (listId: number) => {
-    setLists((prevLists) => prevLists.filter((list) => list.id !== listId));
-    setActiveListId(1); // Возвращаемся к основному списку
+    setLists((prevLists) =>
+      prevLists.map((list) =>
+        list.id === listId ? { ...list, deleted: true } : list
+      )
+    );
+
+    setActiveListId(1);
+    handleCloseSnackbar();
+    showSnackbar("list deleted", () => restoreList(listId));
+  };
+
+  const restoreList = (listId: number) => {
+    setLists((prevLists) =>
+      prevLists.map((list) =>
+        list.id === listId ? { ...list, deleted: false } : list
+      )
+    );
+
+    setActiveListId(listId);
+    handleCloseSnackbar();
   };
 
   const switchList = (listId: number) => {
