@@ -16,6 +16,14 @@ const TaskLists: React.FC = () => {
   const { lists, activeListId, switchList, addList, removeList } = useTodo();
   const visibleLists = lists.filter((list) => !list.deleted);
 
+  const handleAddClick = () => {
+    const listName = prompt("Enter new list name");
+    if (listName === null || listName.trim() === "") {
+      return;
+    }
+    addList(listName.trim());
+  };
+
   return (
     <Stack direction="row" component="ul" className={style.lists}>
       {visibleLists.map((list) => (
@@ -72,7 +80,7 @@ const TaskLists: React.FC = () => {
               filter: "brightness(90%)",
             },
           }}
-          onClick={() => addList(prompt("Enter new list name") || "New List")}
+          onClick={handleAddClick}
         >
           <AddRoundedIcon />
         </IconButton>
