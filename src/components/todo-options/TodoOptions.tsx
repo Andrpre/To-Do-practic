@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useTodo } from "../../utils/TodoContext";
-import { Todo } from "../../App";
+import { Todo } from "../../types/types";
 import {
   Divider,
   IconButton,

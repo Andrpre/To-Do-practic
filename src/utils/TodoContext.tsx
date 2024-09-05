@@ -1,11 +1,11 @@
 import React, {
   createContext,
   useContext,
-  useState,
+  useReducer,
   ReactNode,
   useEffect,
 } from "react";
-import { Todo } from "../App";
+import { Todo } from "../types/types";
 import { Button, Snackbar } from "@mui/material";
 import ReplayIcon from "@mui/icons-material/Replay";
 
@@ -24,36 +24,286 @@ interface TodoContextType {
   toggleComplete: (id: number) => void;
   clearCompletedTodos: () => void;
   updateTodo: (id: number, updates: Partial<Todo>) => void;
-  sortTodos: (type: "important" | "date", order: "asc" | "desc") => void;
+  sortTodos: (
+    type: "important" | "date",
+    order: "asc" | "desc"
+  ) => void;
   updateTodosOrder: (newOrder: Todo[]) => void;
   addList: (name: string) => void;
   removeList: (listId: number) => void;
   switchList: (listId: number) => void;
 }
 
-const TodoContext = createContext<TodoContextType | undefined>(undefined);
+const TodoContext = createContext<
+  TodoContextType | undefined
+>(undefined);
 
-export const TodoProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [lists, setLists] = useState<List[]>([
+// Дефолтное состояние
+const initialState = {
+  lists: [
     { id: 1, name: "main", todos: [], deleted: false },
-  ]); // Основной список по умолчанию
-  const [activeListId, setActiveListId] = useState<number>(1); // Текущий активный список
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
-  const [undoAction, setUndoAction] = useState<(() => void) | null>(null);
-  const [snackbarKey, setSnackbarKey] = useState<number>(0);
+  ],
+  activeListId: 1,
+  snackbar: {
+    open: false,
+    message: null,
+    action: null,
+  },
+};
 
+// Действия для редьюсера
+const actionTypes = {
+  ADD_TASK: "ADD_TASK",
+  REMOVE_TASK: "REMOVE_TASK",
+  TOGGLE_COMPLETE: "TOGGLE_COMPLETE",
+  CLEAR_COMPLETED: "CLEAR_COMPLETED",
+  UPDATE_TODO: "UPDATE_TODO",
+  UPDATE_TODOS_ORDER: "UPDATE_TODOS_ORDER",
+  ADD_LIST: "ADD_LIST",
+  REMOVE_LIST: "REMOVE_LIST",
+  SWITCH_LIST: "SWITCH_LIST",
+  SHOW_SNACKBAR: "SHOW_SNACKBAR",
+  HIDE_SNACKBAR: "HIDE_SNACKBAR",
+  UNDO_ACTION: "UNDO_ACTION",
+  RESTORE_LISTS: "RESTORE_LISTS",
+};
+
+// Редьюсер для обработки состояния
+const todoReducer = (state: TodoContextType, action) => {
+  switch (action.type) {
+    case actionTypes.ADD_TASK:
+      const newTodo: Todo = {
+        id: Date.now(),
+        text: action.payload.text,
+        important: action.payload.important,
+        completed: false,
+        deleted: false,
+      };
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? { ...list, todos: [newTodo, ...list.todos] }
+            : list
+        ),
+      };
+
+    case actionTypes.REMOVE_TASK:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? {
+                ...list,
+                todos: list.todos.map((todo) =>
+                  todo.id === action.payload.id
+                    ? { ...todo, deleted: true }
+                    : todo
+                ),
+              }
+            : list
+        ),
+      };
+
+    case actionTypes.TOGGLE_COMPLETE:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? {
+                ...list,
+                todos: list.todos.map((todo) =>
+                  todo.id === action.payload.id
+                    ? {
+                        ...todo,
+                        completed: !todo.completed,
+                      }
+                    : todo
+                ),
+              }
+            : list
+        ),
+      };
+
+    case actionTypes.CLEAR_COMPLETED:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? {
+                ...list,
+                todos: list.todos.map((todo) =>
+                  todo.completed
+                    ? { ...todo, deleted: true }
+                    : todo
+                ),
+              }
+            : list
+        ),
+      };
+
+    case actionTypes.UPDATE_TODO:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? {
+                ...list,
+                todos: list.todos.map((todo) =>
+                  todo.id === action.payload.id
+                    ? { ...todo, ...action.payload.updates }
+                    : todo
+                ),
+              }
+            : list
+        ),
+      };
+
+    case actionTypes.UPDATE_TODOS_ORDER:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === state.activeListId
+            ? { ...list, todos: action.payload.newOrder }
+            : list
+        ),
+      };
+
+    case actionTypes.ADD_LIST:
+      const newList: List = {
+        id: Date.now(),
+        name: action.payload.name,
+        todos: [],
+        deleted: false,
+      };
+      return {
+        ...state,
+        lists: [...state.lists, newList],
+        activeListId: newList.id,
+      };
+
+    case actionTypes.REMOVE_LIST:
+      return {
+        ...state,
+        lists: state.lists.map((list) =>
+          list.id === action.payload.listId
+            ? { ...list, deleted: true }
+            : list
+        ),
+        activeListId: 1, // Возвращаемся к главному списку
+      };
+
+    case actionTypes.SWITCH_LIST:
+      return {
+        ...state,
+        activeListId: action.payload.listId,
+      };
+
+    case actionTypes.SHOW_SNACKBAR:
+      return {
+        ...state,
+        snackbar: {
+          open: true,
+          message: action.message,
+          action: action.undoAction || null,
+        },
+      };
+
+    case actionTypes.HIDE_SNACKBAR:
+      return {
+        ...state,
+        snackbar: {
+          ...state.snackbar,
+          open: false,
+        },
+      };
+
+    case actionTypes.RESTORE_LISTS:
+      return {
+        ...state,
+        lists: action.payload.lists, // Восстанавливаем списки
+      };
+
+    case actionTypes.UNDO_ACTION:
+      if (action.undoType === actionTypes.REMOVE_TASK) {
+        return {
+          ...state,
+          lists: state.lists.map((list) =>
+            list.id === state.activeListId
+              ? {
+                  ...list,
+                  todos: list.todos.map((todo) =>
+                    todo.id === action.payload.id
+                      ? { ...todo, deleted: false }
+                      : todo
+                  ),
+                }
+              : list
+          ),
+        };
+      }
+
+      if (action.undoType === actionTypes.CLEAR_COMPLETED) {
+        return {
+          ...state,
+          lists: state.lists.map((list) =>
+            list.id === state.activeListId
+              ? {
+                  ...list,
+                  todos: list.todos.map((todo) =>
+                    todo.completed
+                      ? { ...todo, deleted: false }
+                      : todo
+                  ),
+                }
+              : list
+          ),
+        };
+      }
+
+      if (action.undoType === actionTypes.REMOVE_LIST) {
+        return {
+          ...state,
+          lists: state.lists.map((list) =>
+            list.id === action.payload.listId
+              ? { ...list, deleted: false }
+              : list
+          ),
+        };
+      }
+
+      return state;
+
+    default:
+      return state;
+  }
+};
+
+export const TodoProvider: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
+  const [state, dispatch] = useReducer(
+    todoReducer,
+    initialState
+  );
+
+  // Логика для сохранения данных в localStorage при изменении списков
   useEffect(() => {
     const savedLists = localStorage.getItem("lists");
     if (savedLists) {
-      setLists(JSON.parse(savedLists));
+      dispatch({
+        type: actionTypes.RESTORE_LISTS,
+        payload: { lists: JSON.parse(savedLists) },
+      });
     }
 
-    const savedActiveListId = localStorage.getItem("activeListId");
+    const savedActiveListId =
+      localStorage.getItem("activeListId");
     if (savedActiveListId) {
-      setActiveListId(Number(savedActiveListId));
+      dispatch({
+        type: actionTypes.SWITCH_LIST,
+        payload: { listId: Number(savedActiveListId) },
+      });
     }
   }, []);
 
@@ -64,15 +314,23 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
         ...list,
         todos: list.todos.filter((todo) => !todo.deleted),
       }));
-  
-    localStorage.setItem("lists", JSON.stringify(filteredLists));
+
+    localStorage.setItem(
+      "lists",
+      JSON.stringify(filteredLists)
+    );
   }, [lists]);
 
   useEffect(() => {
-    localStorage.setItem("activeListId", String(activeListId));
+    localStorage.setItem(
+      "activeListId",
+      String(activeListId)
+    );
   }, [activeListId]);
 
-  const activeList = lists.find((list) => list.id === activeListId);
+  const activeList = lists.find(
+    (list) => list.id === activeListId
+  );
 
   const addTask = (text: string, important: boolean) => {
     if (!activeList) return;
@@ -101,7 +359,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+                todo.id === id
+                  ? { ...todo, completed: !todo.completed }
+                  : todo
               ),
             }
           : list
@@ -110,7 +370,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const removeTask = (id: number) => {
-    const taskToRemove = activeList?.todos.find((todo) => todo.id === id);
+    const taskToRemove = activeList?.todos.find(
+      (todo) => todo.id === id
+    );
     if (!taskToRemove) return;
 
     setLists((prevLists) =>
@@ -119,7 +381,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.id === id ? { ...todo, deleted: true } : todo
+                todo.id === id
+                  ? { ...todo, deleted: true }
+                  : todo
               ),
             }
           : list
@@ -137,7 +401,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.id === id ? { ...todo, deleted: false } : todo
+                todo.id === id
+                  ? { ...todo, deleted: false }
+                  : todo
               ),
             }
           : list
@@ -150,7 +416,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   const clearCompletedTodos = () => {
     if (!activeList) return;
 
-    const completedTodos = activeList.todos.filter((todo) => todo.completed);
+    const completedTodos = activeList.todos.filter(
+      (todo) => todo.completed
+    );
     if (completedTodos.length === 0) return;
 
     setLists((prevLists) =>
@@ -159,7 +427,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.completed ? { ...todo, deleted: true } : todo
+                todo.completed
+                  ? { ...todo, deleted: true }
+                  : todo
               ),
             }
           : list
@@ -167,7 +437,10 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
     );
 
     handleCloseSnackbar();
-    showSnackbar("all completed tasks deleted", undoClearCompleted);
+    showSnackbar(
+      "all completed tasks deleted",
+      undoClearCompleted
+    );
   };
 
   const undoClearCompleted = () => {
@@ -177,7 +450,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.completed ? { ...todo, deleted: false } : todo
+                todo.completed
+                  ? { ...todo, deleted: false }
+                  : todo
               ),
             }
           : list
@@ -187,14 +462,19 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
     handleCloseSnackbar();
   };
 
-  const updateTodo = (id: number, updates: Partial<Todo>) => {
+  const updateTodo = (
+    id: number,
+    updates: Partial<Todo>
+  ) => {
     setLists((prevLists) =>
       prevLists.map((list) =>
         list.id === activeListId
           ? {
               ...list,
               todos: list.todos.map((todo) =>
-                todo.id === id ? { ...todo, ...updates } : todo
+                todo.id === id
+                  ? { ...todo, ...updates }
+                  : todo
               ),
             }
           : list
@@ -202,25 +482,34 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
-  const sortTodos = (type: "important" | "date", order: "asc" | "desc") => {
+  const sortTodos = (
+    type: "important" | "date",
+    order: "asc" | "desc"
+  ) => {
     setLists((prevLists) =>
       prevLists.map((list) => {
         if (list.id !== activeListId) return list;
 
-        const activeTodos = list.todos.filter((todo) => !todo.completed);
-        const completedTodos = list.todos.filter((todo) => todo.completed);
+        const activeTodos = list.todos.filter(
+          (todo) => !todo.completed
+        );
+        const completedTodos = list.todos.filter(
+          (todo) => todo.completed
+        );
 
         const sortFunction = (a: Todo, b: Todo) => {
           let comparison = 0;
           if (type === "important") {
-            comparison = Number(a.important) - Number(b.important);
+            comparison =
+              Number(a.important) - Number(b.important);
           } else if (type === "date") {
             comparison = a.id - b.id;
           }
           return order === "asc" ? comparison : -comparison;
         };
 
-        const sortedActiveTodos = activeTodos.sort(sortFunction);
+        const sortedActiveTodos =
+          activeTodos.sort(sortFunction);
 
         return {
           ...list,
@@ -233,13 +522,20 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   const updateTodosOrder = (newOrder: Todo[]) => {
     setLists((prevLists) =>
       prevLists.map((list) =>
-        list.id === activeListId ? { ...list, todos: [...newOrder] } : list
+        list.id === activeListId
+          ? { ...list, todos: [...newOrder] }
+          : list
       )
     );
   };
 
   const addList = (name: string) => {
-    const newList: List = { id: Date.now(), name, todos: [], deleted: false };
+    const newList: List = {
+      id: Date.now(),
+      name,
+      todos: [],
+      deleted: false,
+    };
     setLists((prevLists) => [...prevLists, newList]);
     setActiveListId(newList.id);
   };
@@ -247,7 +543,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   const removeList = (listId: number) => {
     setLists((prevLists) =>
       prevLists.map((list) =>
-        list.id === listId ? { ...list, deleted: true } : list
+        list.id === listId
+          ? { ...list, deleted: true }
+          : list
       )
     );
 
@@ -259,7 +557,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
   const restoreList = (listId: number) => {
     setLists((prevLists) =>
       prevLists.map((list) =>
-        list.id === listId ? { ...list, deleted: false } : list
+        list.id === listId
+          ? { ...list, deleted: false }
+          : list
       )
     );
 
@@ -271,7 +571,10 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
     setActiveListId(listId);
   };
 
-  const showSnackbar = (message: string, action?: () => void) => {
+  const showSnackbar = (
+    message: string,
+    action?: () => void
+  ) => {
     setSnackbarMessage(message);
     setUndoAction(() => action || null);
     setSnackbarOpen(true);
@@ -339,7 +642,9 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = ({
 export const useTodo = () => {
   const context = useContext(TodoContext);
   if (!context) {
-    throw new Error("useTodo must be used within a TodoProvider");
+    throw new Error(
+      "useTodo must be used within a TodoProvider"
+    );
   }
   return context;
 };

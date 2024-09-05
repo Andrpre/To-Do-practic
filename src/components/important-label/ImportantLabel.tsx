@@ -6,7 +6,7 @@ import { Controller } from "react-hook-form";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
 import clsx from "clsx";
-import { Todo } from "../../App";
+import { Todo } from "../../types/types";
 
 interface IImportantLabel {
   control: any;

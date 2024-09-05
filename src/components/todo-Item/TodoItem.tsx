@@ -11,7 +11,7 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
 import style from "./style.module.scss";
-import { Todo } from "../../App";
+import { Todo } from "../../types/types";
 import { useTodo } from "../../utils/TodoContext";
 import TodoOptions from "../todo-options/TodoOptions";
 
