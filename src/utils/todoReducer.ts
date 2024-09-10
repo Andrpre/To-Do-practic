@@ -87,7 +87,7 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
         ...state,
         lists: updateList(state.lists, state.activeListId, (todos) =>
           todos.map((todo) =>
-            todo.deleted ? { ...todo, deleted: false } : todo
+            todo.deleted && todo.deleted ? { ...todo, deleted: false } : todo
           )
         ),
       };
