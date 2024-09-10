@@ -1,169 +1,125 @@
-// src/reducer/todoReducer.ts
-import { List, Todo } from "../types/types";
+import { TodoAction, TodoState, Todo, List } from "../types/types";
 
-// Описание типов экшенов
-type Action =
-  | { type: "ADD_TASK"; text: string; important: boolean }
-  | { type: "REMOVE_TASK"; id: number }
-  | { type: "TOGGLE_COMPLETE"; id: number }
-  | { type: "CLEAR_COMPLETED_TODOS" }
-  | { type: "UNDO_CLEAR_COMPLETED" }
-  | { type: "UPDATE_TODO"; id: number; updates: Partial<Todo> }
-  | { type: "SORT_TODOS"; sortBy: "important" | "date"; order: "asc" | "desc" }
-  | { type: "UPDATE_TODOS_ORDER"; newOrder: Todo[] }
-  | { type: "ADD_LIST"; name: string }
-  | { type: "REMOVE_LIST"; id: number }
-  | { type: "RESTORE_LIST"; id: number }
-  | { type: "RESTORE_TASK"; id: number }
-  | { type: "SWITCH_LIST"; id: number }
-  | { type: "LOAD_LISTS"; lists: List[] };
+// Инициализация состояния из localStorage
+export const initializeState = (): TodoState => {
+  const savedLists = localStorage.getItem("lists");
+  const savedActiveListId = localStorage.getItem("activeListId");
 
-// Начальное состояние
-export const initialState = {
-  lists: [
-    { id: 1, name: "main", todos: [], deleted: false },
-  ],
-  activeListId: 1,
+  return {
+    lists: savedLists
+      ? JSON.parse(savedLists)
+      : [{ id: 1, name: "main", todos: [], deleted: false }],
+    activeListId: savedActiveListId ? Number(savedActiveListId) : 1,
+    snackbar: {
+      open: false,
+      message: "",
+      key: 0,
+      undoAction: () => {},
+    },
+  };
 };
 
-// Редуктор
-export const todoReducer = (state: typeof initialState, action: Action) => {
+// Утилитарная функция для обновления списка
+const updateList = (
+  lists: List[],
+  activeListId: number,
+  updater: (todos: Todo[]) => Todo[]
+) =>
+  lists.map((list) =>
+    list.id === activeListId ? { ...list, todos: updater(list.todos) } : list
+  );
+
+// Утилитарная функция для изменения конкретного todo
+const updateTodo = (
+  todos: Todo[],
+  todoId: number,
+  updater: (todo: Todo) => Todo
+) => todos.map((todo) => (todo.id === todoId ? updater(todo) : todo));
+
+export const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
     case "ADD_TASK":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: [
-                  { id: Date.now(), text: action.text, important: action.important, completed: false, deleted: false },
-                  ...list.todos,
-                ],
-              }
-            : list
-        ),
+        lists: updateList(state.lists, state.activeListId, (todos) => [
+          {
+            id: Date.now(),
+            text: action.text,
+            important: action.important,
+            completed: false,
+            deleted: false,
+          },
+          ...todos,
+        ]),
       };
 
     case "REMOVE_TASK":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.id === action.id ? { ...todo, deleted: true } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          updateTodo(todos, action.id, (todo) => ({ ...todo, deleted: true }))
         ),
       };
 
     case "TOGGLE_COMPLETE":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          updateTodo(todos, action.id, (todo) => ({
+            ...todo,
+            completed: !todo.completed,
+          }))
         ),
       };
 
     case "CLEAR_COMPLETED_TODOS":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.completed ? { ...todo, deleted: true } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          todos.map((todo) =>
+            todo.completed ? { ...todo, deleted: true } : todo
+          )
         ),
       };
 
     case "UNDO_CLEAR_COMPLETED":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.deleted ? { ...todo, deleted: false } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          todos.map((todo) =>
+            todo.deleted ? { ...todo, deleted: false } : todo
+          )
         ),
       };
 
     case "UPDATE_TODO":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.id === action.id ? { ...todo, ...action.updates } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          updateTodo(todos, action.id, (todo) => ({
+            ...todo,
+            ...action.updates,
+          }))
         ),
-      };
-
-    case "SORT_TODOS":
-      return {
-        ...state,
-        lists: state.lists.map((list) => {
-          if (list.id !== state.activeListId) return list;
-
-          const activeTodos = list.todos.filter((todo) => !todo.completed);
-          const completedTodos = list.todos.filter((todo) => todo.completed);
-
-          const sortFunction = (a: Todo, b: Todo) => {
-            let comparison = 0;
-            if (action.sortBy === "important") {
-              comparison = Number(a.important) - Number(b.important);
-            } else if (action.sortBy === "date") {
-              comparison = a.id - b.id;
-            }
-            return action.order === "asc" ? comparison : -comparison;
-          };
-
-          const sortedActiveTodos = activeTodos.sort(sortFunction);
-
-          return {
-            ...list,
-            todos: [...sortedActiveTodos, ...completedTodos],
-          };
-        }),
       };
 
     case "UPDATE_TODOS_ORDER":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId ? { ...list, todos: [...action.newOrder] } : list
-        ),
+        lists: updateList(state.lists, state.activeListId, () => [
+          ...action.newOrder,
+        ]),
       };
 
     case "ADD_LIST":
+      const newListId = Date.now();
       return {
         ...state,
         lists: [
           ...state.lists,
-          { id: Date.now(), name: action.name, todos: [], deleted: false },
+          { id: newListId, name: action.name, todos: [], deleted: false },
         ],
-        activeListId: Date.now(),
+        activeListId: newListId,
       };
 
     case "REMOVE_LIST":
@@ -187,15 +143,8 @@ export const todoReducer = (state: typeof initialState, action: Action) => {
     case "RESTORE_TASK":
       return {
         ...state,
-        lists: state.lists.map((list) =>
-          list.id === state.activeListId
-            ? {
-                ...list,
-                todos: list.todos.map((todo) =>
-                  todo.id === action.id ? { ...todo, deleted: false } : todo
-                ),
-              }
-            : list
+        lists: updateList(state.lists, state.activeListId, (todos) =>
+          updateTodo(todos, action.id, (todo) => ({ ...todo, deleted: false }))
         ),
       };
 
@@ -209,6 +158,26 @@ export const todoReducer = (state: typeof initialState, action: Action) => {
       return {
         ...state,
         lists: action.lists,
+      };
+
+    case "SHOW_SNACKBAR":
+      return {
+        ...state,
+        snackbar: {
+          open: true,
+          message: action.message,
+          key: state.snackbar.key + 1,
+          undoAction: action.action,
+        },
+      };
+
+    case "CLOSE_SNACKBAR":
+      return {
+        ...state,
+        snackbar: {
+          ...state.snackbar,
+          open: false,
+        },
       };
 
     default:

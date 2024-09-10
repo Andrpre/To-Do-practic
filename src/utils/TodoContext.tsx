@@ -1,14 +1,158 @@
-// src/context/TodoContext.tsx
-import React, { ReactNode, useReducer, useState, createContext, useContext, useEffect } from "react";
-import { Snackbar, Button } from "@mui/material";
+import React, {
+  createContext,
+  useReducer,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
+import { Todo, TodoContextType } from "../types/types";
+import { todoReducer, initializeState } from "../utils/todoReducer";
+import { Button, Snackbar } from "@mui/material";
 import ReplayIcon from "@mui/icons-material/Replay";
-import { todoReducer, initialState } from "../utils/todoReducer";
-import { TodoContextType } from "../types/types";
 
-// Создаем контекст
-export const TodoContext = createContext<TodoContextType | undefined>(undefined);
+export const TodoContext = createContext<TodoContextType | undefined>(
+  undefined
+);
 
-// Кастомный хук для использования контекста
+export const TodoProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(todoReducer, undefined, initializeState);
+
+  // Сохранение списков в localStorage при изменениях
+  useEffect(() => {
+    const filteredLists = state.lists
+      .filter((list) => !list.deleted)
+      .map((list) => ({
+        ...list,
+        todos: list.todos.filter((todo) => !todo.deleted),
+      }));
+    localStorage.setItem("lists", JSON.stringify(filteredLists));
+  }, [state.lists]);
+
+  // Сохранение активного списка в localStorage
+  useEffect(() => {
+    localStorage.setItem("activeListId", String(state.activeListId));
+  }, [state.activeListId]);
+
+  const addTask = (text: string, important: boolean) => {
+    dispatch({ type: "ADD_TASK", text, important });
+  };
+
+  const toggleComplete = (id: number) => {
+    dispatch({ type: "TOGGLE_COMPLETE", id });
+  };
+
+  const removeTask = (id: number) => {
+    const taskToRemove = state.lists
+      .find((list) => list.id === state.activeListId)
+      ?.todos.find((todo) => todo.id === id);
+    if (!taskToRemove) return;
+
+    dispatch({ type: "REMOVE_TASK", id });
+    showSnackbar("Task deleted", () => restoreTask(id));
+  };
+
+  const restoreTask = (id: number) => {
+    dispatch({ type: "RESTORE_TASK", id });
+    handleCloseSnackbar();
+  };
+
+  const clearCompletedTodos = () => {
+    const completedTodos = state.lists
+      .find((list) => list.id === state.activeListId)
+      ?.todos.filter((todo) => todo.completed);
+    if (!completedTodos || completedTodos.length === 0) return;
+
+    dispatch({ type: "CLEAR_COMPLETED_TODOS" });
+    showSnackbar("All completed tasks deleted", () => undoClearCompleted());
+  };
+
+  const undoClearCompleted = () => {
+    dispatch({ type: "UNDO_CLEAR_COMPLETED" });
+    handleCloseSnackbar();
+  };
+
+  const updateTodo = (id: number, updates: Partial<Todo>) => {
+    dispatch({ type: "UPDATE_TODO", id, updates });
+  };
+
+  const updateTodosOrder = (newOrder: Todo[]) => {
+    dispatch({ type: "UPDATE_TODOS_ORDER", newOrder });
+  };
+
+  const addList = (name: string) => {
+    dispatch({ type: "ADD_LIST", name });
+  };
+
+  const removeList = (id: number) => {
+    dispatch({ type: "REMOVE_LIST", id });
+    showSnackbar("List deleted", () => restoreList(id));
+  };
+
+  const restoreList = (id: number) => {
+    dispatch({ type: "RESTORE_LIST", id });
+    handleCloseSnackbar();
+  };
+
+  const switchList = (id: number) => {
+    dispatch({ type: "SWITCH_LIST", id });
+  };
+
+  const showSnackbar = (message: string, action: () => void) => {
+    dispatch({ type: "SHOW_SNACKBAR", message, action });
+  };
+
+  const handleCloseSnackbar = () => {
+    dispatch({ type: "CLOSE_SNACKBAR" });
+  };
+
+  return (
+    <TodoContext.Provider
+      value={{
+        ...state,
+        addTask,
+        toggleComplete,
+        removeTask,
+        clearCompletedTodos,
+        updateTodo,
+        updateTodosOrder,
+        addList,
+        removeList,
+        switchList,
+      }}
+    >
+      {children}
+      <Snackbar
+        key={state.snackbar.key}
+        open={state.snackbar.open}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        autoHideDuration={2500}
+        onClose={handleCloseSnackbar}
+        message={state.snackbar.message}
+        action={
+          <Button
+            sx={{
+              backgroundColor: "var(--main-bg)",
+              ":hover": {
+                backgroundColor: "var(--main-bg)",
+                filter: "brightness(90%)",
+              },
+              textTransform: "none",
+              color: "var(--text-color)",
+            }}
+            size="small"
+            onClick={state.snackbar.undoAction}
+            endIcon={<ReplayIcon />}
+          >
+            undo
+          </Button>
+        }
+      />
+    </TodoContext.Provider>
+  );
+};
+
 export const useTodo = () => {
   const context = useContext(TodoContext);
   if (!context) {
@@ -16,104 +160,3 @@ export const useTodo = () => {
   }
   return context;
 };
-
-// Провайдер для контекста
-export const TodoProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(todoReducer, initialState);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
-  const [undoAction, setUndoAction] = useState<(() => void) | null>(null);
-  const [snackbarKey, setSnackbarKey] = useState<number>(0);
-
-  // Загружаем данные из localStorage при загрузке компонента
-  useEffect(() => {
-    const savedLists = localStorage.getItem("lists");
-    const savedActiveListId = localStorage.getItem("activeListId");
-
-    if (savedLists) {
-      dispatch({ type: "LOAD_LISTS", lists: JSON.parse(savedLists) });
-    }
-    if (savedActiveListId) {
-      dispatch({ type: "SWITCH_LIST", id: Number(savedActiveListId) });
-    }
-  }, []);
-
-  // Сохраняем данные в localStorage при изменении списка задач или активного списка
-  useEffect(() => {
-    localStorage.setItem("lists", JSON.stringify(state.lists));
-    localStorage.setItem("activeListId", String(state.activeListId));
-  }, [state.lists, state.activeListId]);
-
-  // Закрытие Snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-
-  // Показ Snackbar
-  const showSnackbar = (message: string, action?: () => void) => {
-    setSnackbarMessage(message);
-    setUndoAction(() => action || null);
-    setSnackbarOpen(true);
-    setSnackbarKey((prevKey) => prevKey + 1);
-  };
-
-  return (
-    <TodoContext.Provider
-      value={{
-        lists: state.lists,
-        activeListId: state.activeListId,
-        addTask: (text, important) => {
-          dispatch({ type: "ADD_TASK", text, important });
-          showSnackbar("Task added");
-        },
-        removeTask: (id) => {
-          const task = state.lists.find((list) => list.id === state.activeListId)?.todos.find((todo) => todo.id === id);
-          dispatch({ type: "REMOVE_TASK", id });
-          showSnackbar("Task deleted", () => {
-            dispatch({ type: "RESTORE_TASK", id });
-          });
-        },
-        toggleComplete: (id) => dispatch({ type: "TOGGLE_COMPLETE", id }),
-        clearCompletedTodos: () => {
-          dispatch({ type: "CLEAR_COMPLETED_TODOS" });
-          showSnackbar("All completed tasks deleted", () => {
-            dispatch({ type: "UNDO_CLEAR_COMPLETED" });
-          });
-        },
-        updateTodo: (id, updates) => dispatch({ type: "UPDATE_TODO", id, updates }),
-        sortTodos: (type, order) => dispatch({ type: "SORT_TODOS", sortBy: type, order }),
-        updateTodosOrder: (newOrder) => dispatch({ type: "UPDATE_TODOS_ORDER", newOrder }),
-        addList: (name) => {
-          dispatch({ type: "ADD_LIST", name });
-          showSnackbar("List added");
-        },
-        removeList: (listId) => {
-          dispatch({ type: "REMOVE_LIST", id: listId });
-          showSnackbar("List deleted", () => {
-            dispatch({ type: "RESTORE_LIST", id: listId });
-          });
-        },
-        switchList: (listId) => dispatch({ type: "SWITCH_LIST", id: listId }),
-      }}
-    >
-      {children}
-      <Snackbar
-        key={snackbarKey}
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        message={snackbarMessage}
-        action={
-          undoAction && (
-            <Button color="inherit" size="small" onClick={undoAction}>
-              <ReplayIcon />
-              Undo
-            </Button>
-          )
-        }
-      />
-    </TodoContext.Provider>
-  );
-};
-
-export default TodoProvider;
