@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import {
   ListItemText,
@@ -21,16 +21,21 @@ interface ITodoItemProps {
 
 const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
   const { toggleComplete } = useTodo();
+
+  const handleToggleComplete = useCallback(() => {
+    toggleComplete(todo.id);
+  }, [todo.id, toggleComplete]);
+
   return (
     <ListItem
-      disableGutters={true}
-      disablePadding={true}
+      disableGutters
+      disablePadding
       className={style["tasks-item"]}
       secondaryAction={<TodoOptions todo={todo} />}
     >
       <ListItemButton
-        dense={true}
-        onClick={() => toggleComplete(todo.id)}
+        dense
+        onClick={handleToggleComplete}
         sx={{ paddingRight: "80px !important" }}
       >
         <Checkbox
@@ -57,7 +62,7 @@ const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
           }
         />
         <ListItemText
-          disableTypography={true}
+          disableTypography
           sx={{
             textDecoration: todo.completed ? "line-through" : "none",
             overflow: "hidden",

@@ -24,43 +24,12 @@ import {
 } from "react-beautiful-dnd";
 
 const TodoList: React.FC = () => {
-  const {
-    lists,
-    activeListId,
-    clearCompletedTodos,
-    updateTodosOrder,
-  } = useTodo();
-  const activeList = lists.find((list) => list.id === activeListId);
-
+  const { lists, activeListId, clearCompletedTodos, updateTodosOrder } =
+    useTodo();
   // Состояние для управления раскрытием Accordion
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  // Обрабатываем перетаскивание только активных задач
-  const handleDragDrop = (results: DropResult) => {
-    const { source, destination } = results;
-
-    if (!destination) return;
-    if (source.index === destination.index) return;
-
-    // Создаем новый массив только для активных задач
-    const currentTodos = activeList?.todos.filter(
-      (task) => !task.completed && !task.deleted
-    );
-
-    if (!currentTodos || !activeList) return;
-
-    // Меняем порядок активных задач
-    const [reorderedTask] = currentTodos.splice(source.index, 1);
-    currentTodos.splice(destination.index, 0, reorderedTask);
-
-    // Обновляем массив в глобальном состоянии
-    const reorderedTodos = [
-      ...currentTodos, // Сначала активные
-      ...activeList.todos.filter((task) => task.completed), // Завершенные остаются на месте
-    ];
-
-    updateTodosOrder(reorderedTodos);
-  };
+  const activeList = lists.find((list) => list.id === activeListId);
 
   const currentTodos = activeList?.todos.filter(
     (task) => !task.completed && !task.deleted
@@ -68,6 +37,32 @@ const TodoList: React.FC = () => {
   const completedTodos = activeList?.todos.filter(
     (task) => task.completed && !task.deleted
   );
+
+  // Обрабатываем перетаскивание только активных задач
+  const handleDragDrop = (results: DropResult) => {
+    const { source, destination } = results;
+
+    if (!destination || source.index === destination.index) return;
+
+    // Создаем новый массив только для активных задач
+    const todos = [...(currentTodos || [])];
+
+    // Меняем порядок активных задач
+    const [reorderedTask] = todos.splice(source.index, 1);
+    todos.splice(destination.index, 0, reorderedTask);
+
+    // Обновляем массив в глобальном состоянии
+    const reorderedTodos = [
+      ...todos, // Сначала активные
+      ...(activeList?.todos.filter((task) => task.completed) || []), // Завершенные остаются на месте
+    ];
+
+    updateTodosOrder(reorderedTodos);
+  };
+
+  const toggleAccordion = () => {
+    setExpanded((prev) => !prev);
+  };
 
   return (
     <>
@@ -80,7 +75,7 @@ const TodoList: React.FC = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {currentTodos?.length !== 0 ? (
+              {currentTodos?.length ? (
                 currentTodos?.map((todo, index) => (
                   <Draggable
                     draggableId={String(todo.id)}
@@ -89,7 +84,6 @@ const TodoList: React.FC = () => {
                   >
                     {(provided) => (
                       <Box
-                        key={todo.id}
                         {...provided.dragHandleProps}
                         {...provided.draggableProps}
                         ref={provided.innerRef}
@@ -120,13 +114,13 @@ const TodoList: React.FC = () => {
         <Box className={style.completed}>
           <Accordion
             className={style.completed__tasks}
-            disableGutters={true}
+            disableGutters
             sx={{
               backgroundColor: "transparent",
               boxShadow: "none",
             }}
             expanded={expanded}
-            onChange={() => setExpanded(!expanded)}
+            onChange={toggleAccordion}
           >
             <Box className={style.completed__summary}>
               <AccordionSummary

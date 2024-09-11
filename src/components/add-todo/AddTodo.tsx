@@ -12,21 +12,19 @@ import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
 import ImportantLabel from "../important-label/ImportantLabel";
+import { IFormInput } from "../../types/types";
 
 const AddTodo: React.FC = () => {
   const { addTask } = useTodo();
-  const { handleSubmit, control, reset, watch } = useForm({
+  const { handleSubmit, control, reset, watch } = useForm<IFormInput>({
     defaultValues: {
       text: "",
       important: false,
     },
   });
 
-  const onSubmit = (data: {
-    text: string;
-    important: boolean;
-  }) => {
-    if (data.text.trim().length !== 0) {
+  const onSubmit = (data: IFormInput) => {
+    if (data.text.trim()) {
       addTask(data.text, data.important);
       reset();
     }
@@ -38,7 +36,7 @@ const AddTodo: React.FC = () => {
     <FormControl
       component="form"
       size="small"
-      required={true}
+      required
       onSubmit={handleSubmit(onSubmit)}
       className={style.form}
     >
@@ -58,7 +56,9 @@ const AddTodo: React.FC = () => {
             />
           )}
         />
+
         <ImportantLabel control={control} />
+
         {!isEmpty && (
           <Tooltip
             title="add task"
@@ -76,8 +76,9 @@ const AddTodo: React.FC = () => {
                 color: "var(--main-bg)",
                 borderRadius: "var(--main-radius)",
               }}
-              children={<KeyboardReturnIcon />}
-            />
+            >
+              <KeyboardReturnIcon />
+            </IconButton>
           </Tooltip>
         )}
       </Box>

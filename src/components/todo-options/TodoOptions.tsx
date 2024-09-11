@@ -9,7 +9,7 @@ import {
   Tooltip,
   Zoom,
 } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import ImportantLabel from "../important-label/ImportantLabel";
@@ -21,6 +21,7 @@ interface ITodoOptions {
 
 const TodoOptions: React.FC<ITodoOptions> = ({ todo }) => {
   const { removeTask } = useTodo();
+
   const { control } = useForm({
     defaultValues: {
       important: todo.important,
@@ -31,13 +32,22 @@ const TodoOptions: React.FC<ITodoOptions> = ({ todo }) => {
 
   const openOptions = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    },
+    []
+  );
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
+
+  const handleRemoveTask = useCallback(() => {
+    removeTask(todo.id);
+    handleClose();
+  }, [removeTask, todo.id, handleClose]);
+
   return (
     <>
       <Tooltip
@@ -89,7 +99,7 @@ const TodoOptions: React.FC<ITodoOptions> = ({ todo }) => {
         <Divider />
         <MenuItem
           aria-label="delete"
-          onClick={() => removeTask(todo.id)}
+          onClick={handleRemoveTask}
           sx={{
             color: "var(--main-color)",
           }}

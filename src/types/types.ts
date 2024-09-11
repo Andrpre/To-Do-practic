@@ -56,3 +56,8 @@ export interface TodoContextType {
   removeList: (listId: number) => void;
   switchList: (listId: number) => void;
 }
+
+export interface IFormInput {
+  text: string;
+  important: boolean;
+}

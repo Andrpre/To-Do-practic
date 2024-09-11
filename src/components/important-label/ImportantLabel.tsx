@@ -5,8 +5,8 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { Controller } from "react-hook-form";
 import style from "./style.module.scss";
 import { useTodo } from "../../utils/TodoContext";
-import clsx from "clsx";
 import { Todo } from "../../types/types";
+import { useCallback } from "react";
 
 interface IImportantLabel {
   control: any;
@@ -23,24 +23,23 @@ const ImportantLabel: React.FC<IImportantLabel> = ({
 }) => {
   const { updateTodo } = useTodo();
 
+  const handleToggle = useCallback(
+    (value: boolean, field: any) => {
+      const newValue = !value;
+      field.onChange(newValue); // Изменение значения через react-hook-form
+      if (todo?.id) {
+        updateTodo(todo.id, { important: newValue }); // Обновляем задачу
+      }
+      if (onClose) onClose(); // Закрываем меню после клика
+    },
+    [todo, updateTodo, onClose]
+  );
+
   return (
     <Controller
       name="important"
       control={control}
       render={({ field }) => {
-        const handleToggle = () => {
-          const newValue = !field.value; // Используем значение из формы
-          field.onChange(newValue); // Изменяем значение через react-hook-form
-          todo?.id &&
-            updateTodo(todo.id, {
-              important: newValue,
-            });
-          // Закрываем меню после клика
-          if (onClose) {
-            onClose();
-          }
-        };
-
         return inTask ? (
           <MenuItem
             {...field}
@@ -48,7 +47,7 @@ const ImportantLabel: React.FC<IImportantLabel> = ({
             sx={{
               color: "var(--main-color)",
             }}
-            onClick={handleToggle}
+            onClick={() => handleToggle(field.value, field)}
           >
             <LocalFireDepartmentIcon
               sx={{ marginRight: "7px" }}
@@ -68,24 +67,14 @@ const ImportantLabel: React.FC<IImportantLabel> = ({
               value={field.value}
               selected={field.value}
               color="important"
-              onChange={handleToggle}
-              sx={
-                inTask
-                  ? {
-                      borderRadius: "50%",
-                    }
-                  : {
-                      backgroundColor: "var(--main-bg)",
-                      "&.Mui-selected": {
-                        backgroundColor: "var(--main-bg)",
-                      },
-                    }
-              }
-              className={
-                inTask
-                  ? clsx(style.important, style["important-compact"])
-                  : style.important
-              }
+              onChange={() => handleToggle(field.value, field)}
+              sx={{
+                backgroundColor: "var(--main-bg)",
+                "&.Mui-selected": {
+                  backgroundColor: "var(--main-bg)",
+                },
+              }}
+              className={style.important}
             >
               <LocalFireDepartmentIcon />
             </ToggleButton>

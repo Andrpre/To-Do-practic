@@ -11,18 +11,17 @@ import style from "./style.module.scss";
 
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { useCallback } from "react";
 
 const TaskLists: React.FC = () => {
   const { lists, activeListId, switchList, addList, removeList } = useTodo();
   const visibleLists = lists.filter((list) => !list.deleted);
 
-  const handleAddClick = () => {
+  const handleAddClick = useCallback(() => {
     const listName = prompt("Enter new list name");
-    if (listName === null || listName.trim() === "") {
-      return;
-    }
+    if (!listName || listName.trim() === "") return;
     addList(listName.trim());
-  };
+  }, [addList]);
 
   return (
     <Stack direction="row" component="ul" className={style.lists}>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Box,
   Checkbox,
   Link,
   ListItemText,
@@ -13,6 +14,11 @@ import style from "./style.module.scss";
 
 const Header: React.FC = () => {
   const [logoDone, setLogoDone] = useState<boolean>(false);
+
+  const handleLogoClick = () => {
+    setLogoDone((prev) => !prev);
+  };
+
   return (
     <section className={style.header}>
       <Tooltip
@@ -34,22 +40,15 @@ const Header: React.FC = () => {
         TransitionComponent={Zoom}
         arrow
       >
-        <div
-          className={style.logo}
-          onClick={() => setLogoDone(!logoDone)}
-        >
+        <Box className={style.logo} onClick={handleLogoClick}>
           <Checkbox
             checked={logoDone}
             disableRipple
             icon={
-              <RadioButtonUncheckedIcon
-                sx={{ color: "var(--text-color)" }}
-              />
+              <RadioButtonUncheckedIcon sx={{ color: "var(--text-color)" }} />
             }
             checkedIcon={
-              <RadioButtonCheckedIcon
-                sx={{ color: "var(--text-color)" }}
-              />
+              <RadioButtonCheckedIcon sx={{ color: "var(--text-color)" }} />
             }
           />
           <ListItemText
@@ -58,21 +57,17 @@ const Header: React.FC = () => {
                 className={style.logo__text}
                 sx={{
                   fontSize: "24px",
-                  textDecoration: logoDone
-                    ? "line-through"
-                    : "none",
+                  textDecoration: logoDone ? "line-through" : "none",
                 }}
               >
                 To-Do practic
               </Typography>
             }
             sx={{
-              textDecoration: logoDone
-                ? "line-through"
-                : "none",
+              textDecoration: logoDone ? "line-through" : "none",
             }}
           />
-        </div>
+        </Box>
       </Tooltip>
     </section>
   );
