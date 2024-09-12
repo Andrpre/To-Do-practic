@@ -21,7 +21,7 @@ import {
   Droppable,
   Draggable,
   DropResult,
-} from "react-beautiful-dnd";
+} from "@hello-pangea/dnd";
 
 const TodoList: React.FC = () => {
   const { lists, activeListId, clearCompletedTodos, updateTodosOrder } =
