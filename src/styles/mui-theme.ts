@@ -1,6 +1,11 @@
 import { createTheme } from "@mui/material";
 
 export const theme = createTheme({
+  palette: {
+    important: {
+      main: "#970000",
+    },
+  },
   typography: {
     fontFamily:
       '"Roboto Condensed", "Helvetica", "Arial", sans-serif',
@@ -28,38 +33,62 @@ export const theme = createTheme({
         },
       },
     },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-            // backgroundColor: "var(--main-bg)"
-        },
-      },
-    },
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
-            border: "none",
+          border: "none",
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          minHeight: "auto",
         },
       },
     },
     MuiSelect: {
       styleOverrides: {
         icon: {
-            color: "var(--text-color)",
-            width: "0.9em",
-            height: "0.9em",
-            top: "calc(50% - .4em)",
+          color: "var(--text-color)",
+          width: "0.9em",
+          height: "0.9em",
+          top: "calc(50% - .4em)",
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          color: "var(--disabled-color)",
+          border: "none",
+          "&.Mui-selected": {
+            backgroundColor: "transparent",
+          },
+          "&:hover, &.Mui-selected:hover": {
+            backgroundColor: "var(--main-bg)",
+            filter: "brightness(95%)",
+          },
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-           borderRadius: "var(--main-radius)",
-           fontSize: "1rem",
-           height: "25px",
+          fontSize: "1rem",
+        },
+        deleteIcon: {
+          color: "inherit",
         },
       },
     },
+    MuiTooltip: {
+      defaultProps: {
+        disableInteractive: true,
+      },
+    },
+  },
+  shape: {
+    borderRadius: 5,
   },
 });

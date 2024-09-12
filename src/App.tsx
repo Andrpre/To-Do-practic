@@ -1,24 +1,10 @@
+import { Box } from "@mui/material";
 import Header from "./components/header/Header";
 import TodoList from "./components/todo-list/TodoList";
 import AddTodo from "./components/add-todo/AddTodo";
-import "./styles/App.scss";
+import TaskLists from "./components/task-lists/TaskLists";
 import { TodoProvider } from "./utils/TodoContext";
-import { Box } from "@mui/material";
-
-export interface Todo {
-  id: number;
-  text: string;
-  priority: TodoPriority;
-  completed: boolean;
-}
-
-export enum TodoPriority {
-  NO_PRIORITY = "no priority",
-  LOW = "low",
-  MEDIUM = "medium",
-  HIGH = "high",
-  URGENT = "urgent",
-}
+import "./styles/App.scss";
 
 const App: React.FC = () => {
   return (
@@ -26,6 +12,7 @@ const App: React.FC = () => {
       <Box className="container">
         <Header />
         <Box component="section" className="main">
+          <TaskLists />
           <AddTodo />
           <TodoList />
         </Box>

@@ -1,46 +1,76 @@
-# Getting Started with Create React App
+# To-Do practic
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To-Do Practic — это приложение для управления списками дел, созданное с акцентом на масштабируемость и лёгкую расширяемость функционала. Проект разработан с учётом современных подходов к разработке и предоставляет пользователям удобный интерфейс для ведения списка дел. Приложение включает минимально необходимый функционал для полноценного ежедневного использования.
 
-## Available Scripts
+## Используемый стэк
 
-In the project directory, you can run:
+Проект разработан с использованием следующих технологий:
 
-### `npm start`
+- **React;**
+- **TypeScript;**
+- **SCSS;**
+- **MUI (Material-UI);**
+- **CRA.**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Используемые библиотеки
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Проект использует ряд ключевых библиотек, которые обеспечивают функциональность, производительность и удобство разработки:
 
-### `npm test`
+- **React Hook Form** — библиотека для работы с формами. Использована для упрощения масштабируемости приложения в будущем.
+- **Lottie React** — библиотека для анимации Lottie-файлов. Позволяет легко внедрять анимации без необходимости использования сложных CSS-анимаций.
+- **Hello Pangea DnD** — библиотека для реализации drag-and-drop (перетаскивания элементов).
+- **clsx** — утилита для удобного комбинирования классов CSS.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## **Функциональные возможности**
 
-### `npm run build`
+- **Добавление задачи:** Пользователь может добавить новую задачу с её описанием.
+- **Выполнение задачи:** Пользователь может отметить задачу как "выполнена". Все выполненные задачи не удаляются сразу, а попадают в список завершённых. Этот список можно просмотреть в любой момент и при необходимости снять метку "выполнена" с задачи — тогда она снова вернётся в общий список невыполненных задач.
+- **Метка "важное":** У пользователя есть возможность пометить задачу как "важная" перед её созданием. После того как задача создана, метку можно добавлять или удалять в любой момент времени.
+- **Изменение порядка задач:** Пользователи могут изменять порядок актуальных задач с помощью ручного перетаскивания.
+- **Создание списков:** Приложение имеет один основной список задач по умолчанию. Пользователи могут создавать собственные списки и переключаться между ними. Задачи, созданные в конкретном списке, принадлежат только ему.
+- **Удаление задач/списков:** Есть возможность удалить конкретную задачу либо все выполненные задачи. Также можно удалять созданные списки.
+- **Отмена удаления:** Пользователь может отменить действие удаления в течение короткого времени, благодаря всплывающему уведомлению с кнопкой отмены.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![preview](https://andrpre.ru/projects/to-do-practic/preview.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+[**Демонстрация проекта**](https://andrpre.ru/projects/to-do-practic/)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+[Ссылка на макет дизайна в Figma](https://www.figma.com/design/Plevt7FfqdRjPj2RrNz1ME/Pet-projects?node-id=0-1&t=2RNyiQu2EOpvHaMk-1)
 
-### `npm run eject`
+## **Требования**
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Для работы проекта необходимо следующее:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Node.js** версии 14.0.0 или выше.
+- **npm** (Node Package Manager) версии 6.0.0 или выше.
+- **Современный браузер** (Google Chrome, Firefox, Safari, Edge) — для работы с приложением в режиме разработчика или просмотра готовой версии.
+- **Операционная система:** Windows, macOS или Linux.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Рекомендуется использовать последнюю версию Node.js и npm для стабильной работы приложения.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## **Установка**
 
-## Learn More
+1. Клонируйте репозиторий:
+    
+    ```bash
+    git clone <https://github.com/Andrpre/To-Do-practic.git>
+    cd To-Do-practic
+    ```
+    
+2. Установите зависимости:
+    
+    ```jsx
+    npm install
+    ```
+    
+3. Запустите приложение:
+    
+    ```jsx
+    npm run start
+    ```
+    
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Автор
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Разработка и дизайн** — [Andrpre](https://github.com/Andrpre)
+- Связь через Telegram: [@Andrpre](https://t.me/Andrpre)

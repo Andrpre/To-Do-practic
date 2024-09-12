@@ -1,11 +1,28 @@
 .tasks {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+}
+
+.all-tasks-completed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--main-color);
+    animation: alltaskscompleted 0.4s ease-in-out forwards;
+}
+
+@keyframes alltaskscompleted {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
 }
 
 .completed {
     position: relative;
+    margin-top: -5px;
 
     &__tasks {
         display: flex;
@@ -13,9 +30,9 @@
         gap: 15px;
     }
 
-    &__delete {
-        z-index: 2;
-        top: 0;
-        right: 0;
+    &__summary {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
     }
 }

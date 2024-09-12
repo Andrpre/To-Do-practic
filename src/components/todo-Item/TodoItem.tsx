@@ -1,78 +1,41 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import {
   ListItemText,
-  IconButton,
   Checkbox,
-  Tooltip,
-  Zoom,
   ListItemButton,
   ListItem,
 } from "@mui/material";
 
-import CloseIcon from "@mui/icons-material/Close";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
 import style from "./style.module.scss";
-import { Todo, TodoPriority } from "../../App";
-import { useForm } from "react-hook-form";
+import { Todo } from "../../types/types";
 import { useTodo } from "../../utils/TodoContext";
-import Priority from "../priority/Priority";
+import TodoOptions from "../todo-options/TodoOptions";
 
-interface TodoItemProps {
+interface ITodoItemProps {
   todo: Todo;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const { toggleComplete, removeTask } =
-    useTodo();
-  const { control } = useForm({
-    defaultValues: {
-      priority: todo.priority,
-    },
-  });
+const TodoItem: React.FC<ITodoItemProps> = ({ todo }) => {
+  const { toggleComplete } = useTodo();
+
+  const handleToggleComplete = useCallback(() => {
+    toggleComplete(todo.id);
+  }, [todo.id, toggleComplete]);
+
   return (
     <ListItem
-      disableGutters={true}
-      disablePadding={true}
+      disableGutters
+      disablePadding
       className={style["tasks-item"]}
-      sx={{
-        outline:
-          todo.priority === TodoPriority.URGENT
-            ? "2px solid var(--urgent-priority-color)"
-            : "",
-        outlineOffset: "-2px",
-      }}
-      secondaryAction={
-        <>
-          <Priority
-            control={control}
-            todoId={todo.id}
-            isCompact={true}
-          />
-          <Tooltip
-            title="delete task"
-            placement="right"
-            TransitionComponent={Zoom}
-            arrow
-          >
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={() => removeTask(todo.id)}
-            >
-              <CloseIcon
-                sx={{ color: "var(--main-color)" }}
-              />
-            </IconButton>
-          </Tooltip>
-        </>
-      }
+      secondaryAction={<TodoOptions todo={todo} />}
     >
       <ListItemButton
-        dense={true}
-        onClick={() => toggleComplete(todo.id)}
+        dense
+        onClick={handleToggleComplete}
         sx={{ paddingRight: "80px !important" }}
       >
         <Checkbox
@@ -81,25 +44,36 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
           edge="start"
           icon={
             <RadioButtonUncheckedIcon
-              sx={{ color: "var(--main-color)" }}
+              sx={{
+                color: todo.important
+                  ? "var(--important-color)"
+                  : "var(--main-color)",
+              }}
             />
           }
           checkedIcon={
             <RadioButtonCheckedIcon
-              sx={{ color: "var(--main-color)" }}
+              sx={{
+                color: todo.important
+                  ? "var(--important-color)"
+                  : "var(--main-color)",
+              }}
             />
           }
         />
         <ListItemText
-          primary={todo.text}
+          disableTypography
           sx={{
-            textDecoration: todo.completed
-              ? "line-through"
-              : "none",
+            textDecoration: todo.completed ? "line-through" : "none",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            color: todo.important
+              ? "var(--important-color)"
+              : "var(--main-color)",
           }}
-        />
+        >
+          {todo.text}
+        </ListItemText>
       </ListItemButton>
     </ListItem>
   );

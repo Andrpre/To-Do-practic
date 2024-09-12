@@ -6,34 +6,37 @@ import {
   Tooltip,
   Zoom,
   Box,
+  FormControl,
 } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import style from "./style.module.scss";
-import { TodoPriority } from "../../App";
 import { useTodo } from "../../utils/TodoContext";
-import TodoOptions from "../todo-options/TodoOptions";
+import ImportantLabel from "../important-label/ImportantLabel";
+import { IFormInput } from "../../types/types";
 
 const AddTodo: React.FC = () => {
   const { addTask } = useTodo();
-  const { handleSubmit, control, reset, watch } = useForm({
+  const { handleSubmit, control, reset, watch } = useForm<IFormInput>({
     defaultValues: {
       text: "",
-      priority: TodoPriority.NO_PRIORITY,
+      important: false,
     },
   });
 
-  const onSubmit = (data: {
-    text: string;
-    priority: TodoPriority;
-  }) => {
-    addTask(data.text, data.priority);
-    reset();
+  const onSubmit = (data: IFormInput) => {
+    if (data.text.trim()) {
+      addTask(data.text, data.important);
+      reset();
+    }
   };
 
   const isEmpty = watch("text").trim().length === 0;
 
   return (
-    <form
+    <FormControl
+      component="form"
+      size="small"
+      required
       onSubmit={handleSubmit(onSubmit)}
       className={style.form}
     >
@@ -53,6 +56,9 @@ const AddTodo: React.FC = () => {
             />
           )}
         />
+
+        <ImportantLabel control={control} />
+
         {!isEmpty && (
           <Tooltip
             title="add task"
@@ -70,13 +76,13 @@ const AddTodo: React.FC = () => {
                 color: "var(--main-bg)",
                 borderRadius: "var(--main-radius)",
               }}
-              children={<KeyboardReturnIcon />}
-            />
+            >
+              <KeyboardReturnIcon />
+            </IconButton>
           </Tooltip>
         )}
       </Box>
-      <TodoOptions control={control} />
-    </form>
+    </FormControl>
   );
 };
 
