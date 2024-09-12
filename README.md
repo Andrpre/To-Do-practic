@@ -33,9 +33,9 @@ To-Do Practic — это приложение для управления спи
 
 ![preview](https://andrpre.ru/projects/to-do-practic/preview.png)
 
-[Демонстрация проекта](https://andrpre.ru/projects/to-do-practic/)
+[**Демонстрация проекта**](https://andrpre.ru/projects/to-do-practic/)
 
-[**Ссылка на макет дизайна в Figma**](https://www.figma.com/design/Plevt7FfqdRjPj2RrNz1ME/Pet-projects?node-id=0-1&t=2RNyiQu2EOpvHaMk-1)
+[Ссылка на макет дизайна в Figma](https://www.figma.com/design/Plevt7FfqdRjPj2RrNz1ME/Pet-projects?node-id=0-1&t=2RNyiQu2EOpvHaMk-1)
 
 ## **Требования**
 
