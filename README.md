@@ -70,7 +70,7 @@ To-Do Practic — это приложение для управления спи
     ```
     
 
-## Авторы
+## Автор
 
 - **Разработка и дизайн** — [Andrpre](https://github.com/Andrpre)
 - Связь через Telegram: [@Andrpre](https://t.me/Andrpre)
